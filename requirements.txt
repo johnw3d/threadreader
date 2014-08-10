@@ -1,0 +1,4 @@
+tornado==4.0
+python3-memcached==1.51
+git+https://github.com/thatjohnmartin/python-threadutils.git#egg=python-threadutils
+pymongo==2.7.2

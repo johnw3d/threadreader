@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="container">
+        <p>This is a protected page.</p>
+        <p><img src="{{ current_user['profile_image_url'] }}"></p>
+    </div>
+{% end %}
