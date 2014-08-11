@@ -1,0 +1,134 @@
+- thread-based feed reader
+- allows many thread-like things to be followed (rss, twitter, FB, email, browse-trails, tags, ranks, 
+  bookmarking (obvious delicious replacement), etc., via server-side adapters?)
+- client-side thread manager (threder, thr3der) that let's you 
+  - see overviews of threads
+  - manage windows you are looking at over them
+  - merge, split, move things between, add feeds to threads
+  - M suggests a flipbook-like layer that can be invoked on threads
+- things can be in any number of threads, they act like sequenced tags, maybe should have q- & h-threads
+- sequencing is flexible, parsed datestamp or either counter, order of arrival, user ranking, etc.
+- have junk threads & trainable junk detectors
+- some threads have implied actions (like email everything I whack in there to joe, post it to this blog, tweet it,
+  etc.)
+- threads can act as trainers for bayesian filters, that then can feed possible stuff into a thread automagically, maybe
+
+  there's a 'learning look-alike' thread associated with any thread that sucks stuff in under the filter from nominated
+  other threads,
+**  as well as explicit standalone threads you toss stuff in and it tries to find other stuff based on what's in there
+- you can publish threads as feeds for others to follow
+- maybe JMs agents fit in here as thread-gatherers
+- can have shared threads (which act sort of like hashtags, and hashtags could be thread sources)
+- threads can be posted to, have private/anonymous/public modes  (not sure about this, recursive def issue)
+- entries in threads from feeds like twitter & email can be replied to in-situ (ie items in threads have classes with actions)
+- main thing in first ver is to simplify client-side consumption & management of threads; address the overwhelming
+  flood, sort the post generation side later (I think)
+- overview display doesn't just show numbers, shows a bar with read, to-read, etc. markers or bands, gestures for
+  splitting & 
+  merging & tossing items into other threads
+- feed 'folders' are now just threads made by merging other feeds; hrm, maybe not, still need a navigational thread
+  'directories' - 
+  these may be just being able to view expanded 'merged' threads to show whats in them, or use h-tag approach, ie thread
+  'names'
+  are just like tags and can be hierarchical & qualified
+- maybe be able to color threads to easily identify in UI
+- think about providing word-clouds (as one kind of preview) or being able to do some kind of clustering or topic
+  analysis, to help see what's in threads
+- provide simple ways to re-order threads, though not sure of many useful sources of ordering - date, arrival (or add)
+  order, word-rank from word-cloud, own ranking (provide a skiming mode for this?), shared rankings (maybe opt-in; might
+  need ranking groups you can form or join), external sources such as redit/digg ratings (do they have APIs, what would be
+  rights).
+- threads <=> tags (yes, I think so, make everything tags on posts, including date, order, topic, reply-to, 
+  variable rankings, etc., so threads are partial-orderings over particular tags on posts)
+- skimming & preview modes, such as word clouds, popover partial expansion as you press on for a threshold time or hold
+  an item at a 'preview' in the scroll (say indicated middle of screen); multiple 'zoom' levels
+- should all be http API-based
+- have a scan mode, as scroll stuff off top of screen without reading, gets tagged as scanned (as opposed to
+  not-yet-read) and can be reviewed in a scanned-not-read thread (or something)
+- think about blending in the pattern-based, metadata-derived tagging from the astro-catalog design; a variation of training-based
+  threads
+
+Visualizers
+
+
+Persistence
+
+----- exemplary readers
+
+reeder - http://reederapp.com
+Mr Reader - http://www.curioustimes.de/mrreader/index.html
+
+----- metafeed tools
+
+fever - http://feedafever.com
+
+----- feed aggregation services & thread sources
+
+- Feedbin - https://feedbin.com
+- Feedly - https://feedly.com/index.html#discover
+- Feed Wrangler - https://feedwrangler.net/welcome.html
+- Fever
+- FeedHQ
+- Inoreader
+- NewsBlur - http://www.newsblur.com
+- Minimal Reader
+- The Old Reader
+- BazQux Reader
+- Readability.
+
+Sharing services: 
+- Safari Reading List 
+- QUOTE.fm Read
+- Buffer  - https://bufferapp.com
+- Readability 
+- Instapaper 
+- Pocket 
+- Evernote 
+- MarsEdit
+- Pinboard 
+- Delicious 
+- App.net 
+- Twitter 
+- Facebook 
+- Messages 
+- Mail
+
+------------------------------------------------------------
+
+From (earlier) SimpleNote reader++ notes:
+
+- space-efficient feed reader, RSS plus (I suppose) Twitter & Facebook (acually anything that constitutes a feed, or a
+thread!)
+- synch from goog.reader + others(?)
+- lots of tuning for common reading patterns
+  - bump commonly-read feeds to top of list
+  - auto mark-as-read as you scroll past
+  - auto mark-as-read older than x days / update & leave me recent y days
+  - maybe auto partial-expand as item scrolls to top, or something like a loupe area in middle of screen
+    that expands the current item as it scrolls by
+  - scroll back to already-reads
+  - some kind of timeline view showing # items at various ages on each feed
+- lots of persistence & read-later tools
+  - need a public server & persistence app, goog.appengine perhaps
+  - read-later queue
+  - email-to favs for one-click email links
+  - tagging, which amounts to archiving?
+  - follow others public read-later queues & tagging (all the tag-science stuff)
+  - construct threads from items, all the threadory stuff
+  - threads surface as feeds, conversely pull thread feeds in from classic thread sources - emails, forums,
+    browse-tracks, etc. 
+  - think about threads as vehicles for social graphs, maybe there's some way to encode multiple concurrent social
+    graphs based on desired relationships.
+- 'follow' bookmarklet to easily add pages with feeds (via server)
+- 'add-to-reader' bookmarklet sticks summary & link to page in an internal 'feed' accessable in reader, this may simply be
+  a tagging bookmarklet and the tags become readable feeds/threads
+- initial emphasis must be on helping manage the info flow and the way you can work through it and mould it and act on
+  it.  Facilities like posting and generating thread content will come later.
+
+is there some way to combine feed-reading & thread-reading?  same thing?
+
+are feeds threads or vice-versa - which is most useful characterization?
+
+maybe can conflate, though likely a feed reader has different UI goals to a forum, unless feed reader is basically
+the 'browse'' UI mode for the forum system
+

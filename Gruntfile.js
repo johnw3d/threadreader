@@ -25,6 +25,7 @@ module.exports = function(grunt) {
               'bootstrap/dist/fonts/**',
               'jquery/dist/jquery.min.js',
               'jquery/dist/jquery.min.map',
+              'jquery-ui/jquery-ui.min.js',
               'font-awesome/fonts/**',
               'html5shiv/dist/html5shiv.min.js',
               'respond/dest/respond.min.js'
