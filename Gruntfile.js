@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     less: {
       development: {
         options: {
-          compress: true
+          compress: false // true
         },
         files: {
           "./static/dist/everything.css": "./static/less/everything.less"
@@ -26,6 +26,7 @@ module.exports = function(grunt) {
               'jquery/dist/jquery.min.js',
               'jquery/dist/jquery.min.map',
               'jquery-ui/jquery-ui.min.js',
+              'jquery-ui/themes/smoothness/jquery-ui.min.css',
               'font-awesome/fonts/**',
               'html5shiv/dist/html5shiv.min.js',
               'respond/dest/respond.min.js'

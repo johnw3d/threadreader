@@ -8,6 +8,8 @@
 
         <!-- Compiled custom + bootstrap less -->
         <link rel="stylesheet" type="text/css" href="/static/dist/everything.css"/>
+        <!-- jquery-ui -->
+        <link rel="stylesheet" href="/static/dist/jquery-ui.min.css">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -22,7 +24,35 @@
         {% block body %}
             <div class="container">
                 <div class="row">
-                    <div class="col-sm-2 left-col">
+                    {% block nav_bar %}
+                        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+                            <div class="container">
+                                {% block nav_bar_content %}
+                                <div class="row">
+                                    <div class="col-sm-3 left-col">
+                                        <button type="button" class="btn btn-link btn-sm navbar-btn">
+                                            <!-- <span class="glyphicon glyphicon-star"></span> Star -->
+                                            <i class="fa fa-lg fa-bars"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-link btn-sm navbar-btn navbar-right">
+                                            <!-- <span class="glyphicon glyphicon-star"></span> Star -->
+                                            <i class="fa fa-lg fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-9 main-col">
+                                        <button type="button" class="btn btn-link btn-sm navbar-btn navbar-right">
+                                            <!-- <span class="glyphicon glyphicon-star"></span> Star -->
+                                            <i class="fa fa-lg fa-bars"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                              {% end %}
+                            </div>
+                        </nav>
+                    {% end %}
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 left-col">
                         {% block left_col %}
                             <div data-spy="affix">
                                 <i class="fa fa-slack fa-3x app-logo"></i>
@@ -45,7 +75,7 @@
                             </div>
                         {% end %}
                     </div>
-                    <div class="col-sm-10 main-col">
+                    <div class="col-sm-9 main-col">
                         {% block main_col %}<p>Main</p>{% end %}
                     </div>
                 </div>
