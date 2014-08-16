@@ -1,4 +1,5 @@
 tornado==4.0
-python3-memcached==1.51
-git+https://github.com/thatjohnmartin/python-threadutils.git#egg=python-threadutils
+#python3-memcached==1.51
+#git+https://github.com/johnw3d/python-threadclient.git#egg=python-threadclient
+/Users/john/Projects/python-threadclient
 pymongo==2.7.2

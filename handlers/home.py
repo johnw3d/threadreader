@@ -4,7 +4,6 @@ import tornado.ioloop
 import tornado.web
 import tornado.auth
 import tornado.gen
-from threadutils.handlers import SessionHandler
 
 log = logging.getLogger('handlers.home')
 mc = memcache.Client(['127.0.0.1:11211'], debug=1)
