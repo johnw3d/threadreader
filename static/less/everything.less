@@ -2,13 +2,18 @@
 @import "../../bower_components/font-awesome/less/font-awesome";
 
 @fa-font-path: "./";
+@icon-font-path: "./";
+
+@navbar-height: 30px;
+@navbar-icon-color: #aaa;
+@navbar-default-link-color: #a5a5a5;
 
 body {
     margin-top: 50px;
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1200px;
 }
 
 .app-logo {
@@ -25,3 +30,17 @@ h1 {
     margin-top: 3px;
     margin-bottom: 28px;
 }
+
+// mixins
+.center-vert {
+    vertical-align: middle;
+}
+
+.navbar {
+  box-shadow: 0px 2px 8px #ccc;
+  border-width: 0;
+}
+
+//.navbar button i {
+//  color: @navbar-icon-color;
+//}

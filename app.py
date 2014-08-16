@@ -2,7 +2,7 @@ import os
 import logging
 import tornado.ioloop
 import tornado.web
-from handlers.home import HomeHandler, LoginHandler, LogoutHandler, ProtectedHandler
+from handlers.home import HomeHandler
 
 settings = dict(
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
@@ -18,9 +18,6 @@ settings = dict(
 
 handlers = [
     (r"/", HomeHandler),
-    (r"/login", LoginHandler),
-    (r"/logout", LogoutHandler),
-    (r"/protected", ProtectedHandler),
 ]
 
 application = tornado.web.Application(handlers, **settings)
@@ -65,5 +62,6 @@ log = logging.getLogger('views.export')
 
 if __name__ == "__main__":
     log.info('Starting Threadreader on port 9001...')
+    print('Starting Threadreader on port 9001...')
     application.listen(9001)
     tornado.ioloop.IOLoop.instance().start()
