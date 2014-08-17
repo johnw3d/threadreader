@@ -27,6 +27,7 @@ module.exports = function(grunt) {
               'jquery/dist/jquery.min.map',
               'jquery-ui/jquery-ui.min.js',
               'jquery-ui/themes/smoothness/jquery-ui.min.css',
+              'jquery-pjax/jquery.pjax.js',
               'font-awesome/fonts/**',
               'html5shiv/dist/html5shiv.min.js',
               'respond/dest/respond.min.js'
