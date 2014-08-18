@@ -6,31 +6,37 @@ __author__ = 'johnw'
 
 import os, logging
 
-class BaseSettings(object):
-    pass
+# utility dict class that maps attr access to dict items
+class settings(dict):
+    def __getattr__(self, name):
+        return self[name]
 
-class APP(BaseSettings):
-    port = 9001
-    tornado_settings = dict(
-        template_path=os.path.join(os.path.dirname(__file__), "templates"),
-        static_path=os.path.join(os.path.dirname(__file__), "static"),
-        twitter_consumer_key = 'jHkeUDDo4iOy3EE0pUtJgTu1z',
-        twitter_consumer_secret = 'qIAIWQmO0ij7mAhm2QEfVRol9SfPbn8X86jlW2Jdd7qIggkBhA',
-        cookie_secret = "8hfh8ry8883jdj9lcbboh7d8920jdbckjsg9266111hgsree",
-        login_url = "/login",
-        debug = True,
-        serve_traceback = True,
-        xsrf_cookies = True,
-    )
+APP = dict(
+    port = 9001,
+)
 
-class THREADSTORE(BaseSettings):
-    host = 'local-api.threadstore.net'
-    post = 8888
-    client_settings = {}
-    request_settings = {}
+TORNADO = settings(
+    template_path=os.path.join(os.path.dirname(__file__), "templates"),
+    static_path=os.path.join(os.path.dirname(__file__), "static"),
+    twitter_consumer_key = 'jHkeUDDo4iOy3EE0pUtJgTu1z',
+    twitter_consumer_secret = 'qIAIWQmO0ij7mAhm2QEfVRol9SfPbn8X86jlW2Jdd7qIggkBhA',
+    cookie_secret = "8hfh8ry8883jdj9lcbboh7d8920jdbckjsg9266111hgsree",
+    login_url = "/login",
+    debug = True,
+    serve_traceback = True,
+    xsrf_cookies = True,
+)
 
-class LOGS(BaseSettings):
-    LOG_ROOT = os.environ.get('THREADREADER_LOG_ROOT', '/var/log/threadreader')
+THREADSTORE = settings(
+    mode = 'async', # or 'blocking'
+    host = 'local-api.threadstore.net',
+    post = 8888,
+    client_settings = {},
+    request_settings = {},
+)
+
+LOGS = settings(
+    LOG_ROOT = os.environ.get('THREADREADER_LOG_ROOT', '/var/log/threadreader'),
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -58,6 +64,7 @@ class LOGS(BaseSettings):
                 'propagate': True,
             },
         }
-    }
-    LOG_LEVEL = logging.DEBUG
-    LOG_FORMAT = '%(asctime)s %(process)d %(filename)s(%(lineno)d): %(levelname)s %(message)s'
+    },
+    LOG_LEVEL = logging.DEBUG,
+    LOG_FORMAT = '%(asctime)s %(process)d %(filename)s(%(lineno)d): %(levelname)s %(message)s',
+)

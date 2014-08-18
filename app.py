@@ -4,7 +4,7 @@
 #
 __author__ = 'johnw'
 
-import os
+import os, sys
 import logging
 import tornado.ioloop
 import tornado.web
@@ -17,21 +17,49 @@ handlers = [
     (r"/", HomeHandler),
 ]
 
-application = tornado.web.Application(handlers, **settings.APP.tornado_settings)
+# create main app & threadstore-client singletons
+application = tornado.web.Application(handlers, **settings.TORNADO)
+threadstore_client = ThreadStoreClient(**settings.THREADSTORE)
 
 logging.basicConfig(filename=os.path.join(settings.LOGS.LOG_ROOT, 'app.log'), filemode='a',
                     level=settings.LOGS.LOG_LEVEL, format=settings.LOGS.LOG_FORMAT)
 
-log = logging.getLogger('views.export')
+log = logging.getLogger('app')
 
-if __name__ == "__main__":
+def main(argv):
+    "threader main, start threadreader webapp"
     # open threadstore client
-    ThreadStoreClient.initialize(settings.THREADSTORE.host,
-                                 settings.THREADSTORE.port,
-                                 settings.THREADSTORE.client_settings,
-                                 settings.THREADSTORE.request_settings)
+    threadstore_client.open()
     # start threadreader webapp
-    log.info('Starting Threadreader on port 9001...')
-    print('Starting Threadreader on port 9001...')
+    msg = 'Starting Threadreader on port %d...' % settings.APP.port
+    log.info(msg)
+    print(msg)
     application.listen(settings.APP.port)
     tornado.ioloop.IOLoop.instance().start()
+
+def init_reader_threadstore(argv):
+    "init reader threadstore collections"
+    threadstore_client.init_reader_threadstore()
+
+def build_test_db(argv):
+    "init reader threadstore collections & build test feeds"
+    init_reader_threadstore()
+    threadstore_client.build_test_db()
+
+# ----------  command-line processor -------
+
+CMDS = {
+    "start": main,
+    "testdb": build_test_db,
+    "cleandb": init_reader_threadstore,
+}
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        cmd = CMDS.get(sys.argv[1])
+        if cmd:
+            cmd(sys.argv)
+        else:
+            print(("Unknown command: ", sys.argv[1]))
+    else:
+        main(sys.argv)
