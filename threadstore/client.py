@@ -23,6 +23,8 @@ class ThreadStoreClient(object):
         self.port = port
         self.client_settings = client_settings
         self.request_settings = request_settings
+        self.blocking_threadstore = None
+        self.threadstore = None
 
     def open(self):
         "open threadstore connection"
@@ -41,11 +43,17 @@ class ThreadStoreClient(object):
     def init_reader_threadstore(self):
         "clear threadstore threadreader collections, recreate & set up indexes, etc."
         ts = self.blocking_threadstore
-        for c in ts.collection_directory(collection='threadreader', structured=False):
+        ts.delete_collection('threadreader')
+
+        for c in ts.
+        for c in ts.search_collections(query={'_name_index': 'threadreader'}, projection=['_name', '_id']).get('items',[]):
+
+
 
         for c in self.collections:
             ts.delete_collection(c['name'])
             ts.create_collection(c['name'])
+
 
     def build_test_db(self):
         "build test feeds"
