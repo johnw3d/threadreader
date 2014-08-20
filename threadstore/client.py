@@ -11,12 +11,17 @@
 #
 __author__ = 'john'
 
-from threadclient.tornado_client import AsyncThreadStore, BlockingThreadStore, ThreadStore
+import logging
 
-from feeds.readers import RSSReader
+from threadclient.client import ThreadStore, ItemNotFound
+from threadclient.tornado_client import AsyncThreadStore
+
+log = logging.getLogger('threadstore.client')
 
 class ThreadStoreClient(object):
     "threadreader's threadstore client"
+
+    _instance = None  # singleton instance
 
     def __init__(self, host='', port=8888, client_settings={}, request_settings={}):
         self.host = host
@@ -24,17 +29,26 @@ class ThreadStoreClient(object):
         self.client_settings = client_settings
         self.request_settings = request_settings
         self.blocking_threadstore = None
+        """@type : threadclient.tornado_client.ThreadStore"""
         self.threadstore = None
+        """@type : threadclient.tornado_client.AsyncThreadStore"""
 
-    def open(self):
-        "open threadstore connection"
+    @classmethod
+    def open(cls, host='', port=8888, client_settings={}, request_settings={}):
+        "instantiate threadstoreclient singleton"
         # establishes both blocking and async connections
-        self.blocking_threadstore = BlockingThreadStore(self.host,
-                                        self.port,
-                                        self.client_settings, self.request_settings)
-        self.threadstore = AsyncThreadStore(self.host,
-                                        self.port,
-                                        self.client_settings, self.request_settings)
+        ThreadStoreClient._instance = tsc = cls(host, port, client_settings, request_settings)
+        tsc.blocking_threadstore = ThreadStore(host, port)
+        tsc.threadstore = AsyncThreadStore(host,
+                                           port,
+                                           client_settings, request_settings)
+        return tsc
+
+    @classmethod
+    def instance(cls):
+        """return ThreadStoreClient singleton
+           :rtype : ThreadStoreClient"""
+        return ThreadStoreClient._instance
 
     def close(self):
         "close threadstore connection"
@@ -43,17 +57,14 @@ class ThreadStoreClient(object):
     def init_reader_threadstore(self):
         "clear threadstore threadreader collections, recreate & set up indexes, etc."
         ts = self.blocking_threadstore
-        ts.delete_collection('threadreader')
-
-        for c in ts.
-        for c in ts.search_collections(query={'_name_index': 'threadreader'}, projection=['_name', '_id']).get('items',[]):
-
-
-
-        for c in self.collections:
-            ts.delete_collection(c['name'])
-            ts.create_collection(c['name'])
-
+        # delete all posts in the threadreader collection subspace
+        ts.delete_posts('threadreader')
+        # delete all subspace collectiobs of threadreader
+        collections = ts.collection_directory('threadreader', structured=False).get('all')
+        if collections:
+            for c in collections:
+                if c != 'threadory':
+                    ts.delete_collection(c)
 
     def build_test_db(self):
         "build test feeds"
@@ -72,6 +83,7 @@ class ThreadStoreClient(object):
             )
         ]
         # load test feeds
+        from feeds.readers import RSSReader
         for tf in test_feeds:
             RSSReader(**tf).update()
 

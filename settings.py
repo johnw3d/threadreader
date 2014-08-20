@@ -11,7 +11,7 @@ class settings(dict):
     def __getattr__(self, name):
         return self[name]
 
-APP = dict(
+APP = settings(
     port = 9001,
 )
 
@@ -28,9 +28,8 @@ TORNADO = settings(
 )
 
 THREADSTORE = settings(
-    mode = 'async', # or 'blocking'
     host = 'local-api.threadstore.net',
-    post = 8888,
+    port = 8888,
     client_settings = {},
     request_settings = {},
 )

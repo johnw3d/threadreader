@@ -4,6 +4,8 @@ import tornado.web
 import tornado.auth
 import tornado.gen
 
+from threadstore.client import ThreadStoreClient
+
 log = logging.getLogger('handlers.home')
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -13,5 +15,6 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
     def get(self):
-        self.render('index.html', foo="bar")
+        tag_dir = ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory('threadreader')
+        self.render('index.html', foo=str(tag_dir))
 
