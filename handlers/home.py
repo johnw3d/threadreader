@@ -15,17 +15,17 @@ class BaseHandler(tornado.web.RequestHandler):
 
 def directory_tree(dir):
     "render given directory as nested <ul><li> HTML"
-    def _render_level(subdir, indent='  '):
+    def _render_level(subdir, path='', indent='  '):
         if subdir:
             ul = indent + '<ul>\n'
             if isinstance(subdir, dict):
                 for k, v in subdir.items():
-                    ul += indent + '  <li><span><i class="tree-folder fa fa-minus-square-o"></i>%s</span>\n' % k
-                    ul += _render_level(v, indent + '    ')
+                    ul += indent + '  <li><span><i class="tree-folder fa fa-minus-square-o"></i><span tag="%s">%s</span></span>\n' %  (path + k, k)
+                    ul += _render_level(v, path + k + '.', indent + '    ')
                     ul += indent + '  </li>\n'
             elif isinstance(subdir, list):
                 for v in subdir:
-                    ul += indent + '  <li><span>%s</span>\n' % v
+                    ul += indent + '  <li><span tag="%s">%s</span>\n' % (path + v, v)
                     ul += indent + '  </li>\n'
             return ul + indent + '</ul>\n'
         else:
@@ -40,3 +40,10 @@ class HomeHandler(BaseHandler):
         tag_dir = ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory('threadreader', filter=r'\.')
         self.render('index.html', foo=str(tag_dir), dir=tag_dir, directory_tree=directory_tree)
 
+
+class ThreadListHandler(BaseHandler):
+
+    def get(self, tag):
+        thread = ThreadStoreClient.instance().blocking_threadstore.thread(tag, 'threadreader')
+        if thread:
+            self.render('threadlist.html', thread=thread['items'])

@@ -35,6 +35,16 @@ module.exports = function(grunt) {
             dest: './static/dist/',
             filter: 'isFile',
             flatten: true
+          },
+          {
+            expand: true,
+            cwd: 'static/js/',
+            src: [
+              'threadreader.js',
+            ],
+            dest: './static/dist/',
+            filter: 'isFile',
+            flatten: true
           }
         ]
       }
@@ -46,6 +56,13 @@ module.exports = function(grunt) {
       less: {
         files: ['./static/less/*.less'], //watched files
         tasks: ['less'], //tasks to run
+        options: {
+          livereload: true
+        }
+      },
+      js: {
+        files: ['./static/js/*.js'], //watched files
+        tasks: ['copy'], //tasks to run
         options: {
           livereload: true
         }

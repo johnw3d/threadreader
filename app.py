@@ -10,12 +10,13 @@ import tornado.ioloop
 import tornado.web
 
 import settings
-from handlers.home import HomeHandler
+from handlers.home import HomeHandler, ThreadListHandler
 
 from threadstore.client import ThreadStoreClient
 
 handlers = [
     (r"/", HomeHandler),
+    (r"/threadlist/(.*)", ThreadListHandler),
 ]
 
 log = logging.getLogger('app')

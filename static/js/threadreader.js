@@ -1,24 +1,15 @@
-{% extends "base.html" %}
+/**
+ * Created by john on 8/21/14.
+ */
 
-{% block main_col %}
-    <h1>All threads</h1>
-    <p>This is index foo.</p>
-    <p><a href="/login">Login</a> | <a href="/protected">Protected Page</a> | <a href="/logout">Logout</a></p>
-    <p>The value of foo is: {{ foo }}</p>
-    {% if current_user %}
-        <p>The current user is: <a href="http://twitter.com/{{ current_user['username'] }}">@{{ current_user['username'] }}</a></p>
-    {% else %}
-        <p>No logged in user.</p>
-    {% end %}
-    {% raw directory_tree(dir) %}
-{% end %}
-
-{% block page_scripts %}
-<script type='text/javascript'>//<![CDATA[
+/*
+ * directory-tree conditioner, works on .tree & associated classes
+ */
 $(window).load(function() {
     $(function () {
+        // decorate parent <ul>s
         $('.tree li:has(ul)').addClass('parent_li').find('i.tree-folder').attr('title', 'Collapse this branch');
-
+        // handler for +/- fold/unfold icon buttons
         $('.tree li.parent_li i.tree-folder').on('click', function (e) {
             var children = $(this).closest('li.parent_li').find(' > ul > li');
             if (children.is(":visible")) {
@@ -30,11 +21,12 @@ $(window).load(function() {
             }
             e.stopPropagation();
         });
+        // handler for tag identifiers
+        $('.tree span[tag]').on('click', function (e) {
+            $('#thread-list').load('/threadlist/' + $(this).attr('tag'));
+            e.stopPropagation();
+        });
 
     });
-});//]]>
-</script>
-
-{% end %}
-
+});
 
