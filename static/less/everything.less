@@ -9,31 +9,33 @@
 @navbar-default-link-color: #a5a5a5;
 
 body {
-    margin-top: 50px;
+  margin-top: 50px;
+  font-family: "Tahoma", Helvetica, Arial, sans-serif;
+  line-height: 1.3;
 }
 
 .container {
-    max-width: 1200px;
+  max-width: 1200px;
 }
 
 .app-logo {
-    color: @gray-light;
-    margin-bottom: 20px;
+  color: @gray-light;
+  margin-bottom: 20px;
 }
 
 .main-menu {
-    margin-bottom: 40px;
+  margin-bottom: 40px;
 }
 
 h1 {
-    font-size: 29px;
-    margin-top: 3px;
-    margin-bottom: 28px;
+  font-size: 29px;
+  margin-top: 3px;
+  margin-bottom: 28px;
 }
 
 // mixins
 .center-vert {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 .navbar {
@@ -44,3 +46,85 @@ h1 {
 //.navbar button i {
 //  color: @navbar-icon-color;
 //}
+
+
+.tree {
+  min-height:20px;
+  padding:5px;
+  // margin-bottom:20px;
+  background-color:#fbfbfb;
+  //    border:1px solid #999;
+  //    -webkit-border-radius:4px;
+  //    -moz-border-radius:4px;
+  //    border-radius:4px;
+  -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+
+  li {
+    list-style-type:none;
+    margin:0;
+    // padding:10px 5px 0 5px;
+    position:relative
+  };
+
+  ul {
+    padding: 0 0 0 15px;
+  }
+}
+
+//.tree li {
+//    list-style-type:none;
+//    margin:0;
+//    // padding:10px 5px 0 5px;
+//    position:relative
+//}
+
+
+//.tree li::before, .tree li::after {
+//    content:'';
+//    left:-20px;
+//    position:absolute;
+//    right:auto
+//}
+//.tree li::before {
+//    border-left:1px solid #999;
+////    bottom:0;
+//    height:100%;
+////    top:0;
+//    width:1px
+//}
+//.tree li::after {
+//    border-top:1px solid #999;
+//    height:40px;
+//    top:30px;
+//    width:25px
+//}
+.tree li span {
+//    -moz-border-radius:5px;
+//    -webkit-border-radius:5px;
+//    border:1px solid #999;
+//    border-radius:5px;
+    cursor:pointer;
+    display:inline-block;
+    // padding:3px 8px;
+    text-decoration:none
+}
+.tree li.parent_li>span {
+    cursor:pointer
+}
+.tree>ul>li::before, .tree>ul>li::after {
+    border:0
+}
+.tree li:last-child::before {
+    height:30px
+}
+.tree li.parent_li i.tree-folder {
+  cursor:pointer;
+  margin-right:3px;
+  &:hover {
+    background:#ddd;
+    //border:1px solid #94a0b4;
+    //color:#000
+  }
+}

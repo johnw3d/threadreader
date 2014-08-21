@@ -10,8 +10,31 @@
     {% else %}
         <p>No logged in user.</p>
     {% end %}
+    {% raw directory_tree(dir) %}
 {% end %}
 
+{% block page_scripts %}
+<script type='text/javascript'>//<![CDATA[
+$(window).load(function() {
+    $(function () {
+        $('.tree li:has(ul)').addClass('parent_li').find('i.tree-folder').attr('title', 'Collapse this branch');
 
+        $('.tree li.parent_li i.tree-folder').on('click', function (e) {
+            var children = $(this).closest('li.parent_li').find(' > ul > li');
+            if (children.is(":visible")) {
+                children.hide('fast');
+                $(this).attr('title', 'Expand').addClass('fa-plus-square-o').removeClass('fa-minus-square-o');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Collapse').addClass('fa-minus-square-o').removeClass('fa-plus-square-o');
+            }
+            e.stopPropagation();
+        });
+
+    });
+});//]]>
+</script>
+
+{% end %}
 
 

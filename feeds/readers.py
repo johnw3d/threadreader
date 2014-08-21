@@ -51,7 +51,7 @@ class RSSReader(BaseReader):
                 "author": dict(e['author']),
                 "body": dict(e['content']),
             }
-            ts.create_post(col_id, user='@johnw', body=post, tags=self.tags + ['feed:%s' % self.feed_tag])
+            ts.create_post(col_id, user='@johnw', body=post, tags=self.tags + ['feed.%s' % self.feed_tag])
 
 
   # <title>Daring Fireball</title>

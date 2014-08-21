@@ -60,7 +60,7 @@ class ThreadStoreClient(object):
         # delete all posts in the threadreader collection subspace
         ts.delete_posts('threadreader')
         # delete all subspace collectiobs of threadreader
-        collections = ts.collection_directory('threadreader', structured=False).get('all')
+        collections = ts.collection_directory('threadreader', structured=False).get('_collections')
         if collections:
             for c in collections:
                 if c != 'threadory':
