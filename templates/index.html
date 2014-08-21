@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block left_col %}
+    <div data-spy="affix">
+        <i class="fa fa-slack fa-3x app-logo"></i>
+        <h4>Thread Feeds</h4>
+        {% raw directory_tree(dir) %}
+    </div>
+{% end %}
+
+{% block main_col %}
+    <div id="thread-list">
+        -- nothing selected --
+    </div>
+
+
+<!--
+    <h1>All threads</h1>
+    <p>This is index foo.</p>
+    <p><a href="/login">Login</a> | <a href="/protected">Protected Page</a> | <a href="/logout">Logout</a></p>
+    <p>The value of foo is: {{ foo }}</p>
+    {% if current_user %}
+        <p>The current user is: <a href="http://twitter.com/{{ current_user['username'] }}">@{{ current_user['username'] }}</a></p>
+    {% else %}
+        <p>No logged in user.</p>
+    {% end %} -->
+{% end %}
+
+{% block page_scripts %}
+    <script src="/static/dist/threadreader.js"></script>
+{% end %}
+
+
