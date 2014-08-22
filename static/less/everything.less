@@ -8,6 +8,9 @@
 @navbar-icon-color: #aaa;
 @navbar-default-link-color: #a5a5a5;
 
+@item-body-font: "Tahoma", Helvetica, Arial, sans-serif;
+@item-body-font-size: 14px;
+
 body {
   margin-top: 50px;
   font-family: "Tahoma", Helvetica, Arial, sans-serif;
@@ -46,14 +49,6 @@ h1 {
 //.navbar button i {
 //  color: @navbar-icon-color;
 //}
-
-.selected-feed {
-  background-color:#dde;
-}
-
-.item-date {
-  font-size: 80%;
-}
 
 .tree {
   min-height:20px;
@@ -109,6 +104,26 @@ h1 {
       background: #ddd;
     }
   }
+}
+
+.item-body {
+  margin-left: 20px;
+  blockquote {
+    font-family: @item-body-font;
+    font-size: @item-body-font-size;
+  }
+}
+
+.selected-feed {
+  background-color:#dde;
+}
+
+.item-date {
+  font-size: 80%;
+}
+
+.hover-pad {
+  color: @gray-lighter;
 }
 
 //.tree li {

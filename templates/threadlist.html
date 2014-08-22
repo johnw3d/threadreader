@@ -1,7 +1,12 @@
 <div>
     {% for item in thread %}
-        <p><!--<span class="item-date">{{utils.format_date(item['published'])}}</span>-->
-            <a href="#">{{item['title']}}</a>
-            ({{item['_collection']}})</p>
+        <div>
+            <p>
+                <i class="fa fa-square hover-pad"></i>
+                <!--<span class="item-date">{{utils.format_date(item['published'])}}</span>-->
+                <a href="#" class="item-link">{{item['title']}}</a>
+                ({{item['_collection']}})</p>
+            <div class="item-body" style="display:none" id="{{item['_id']}}">{% raw utils.item_html(item) %}</div>
+        </div>
     {% end %}
 </div>

@@ -14,6 +14,7 @@ class BaseHandler(tornado.web.RequestHandler):
     pass
 
 class TemplateUtils(object):
+    "a namespace for threadreader template utilities (some may factor out at some point)"
 
     def directory_tree(self, dir):
         "render given directory as nested <ul><li> HTML"
@@ -39,6 +40,10 @@ class TemplateUtils(object):
     def format_date(self, date):
         "reformats datestamp"
         return date
+
+    def item_html(self, item):
+        "extract RSS item HTML"
+        return item['body']['#text']
 
 utils = TemplateUtils()
 

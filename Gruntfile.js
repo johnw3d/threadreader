@@ -30,7 +30,8 @@ module.exports = function(grunt) {
               'jquery-pjax/jquery.pjax.js',
               'font-awesome/fonts/**',
               'html5shiv/dist/html5shiv.min.js',
-              'respond/dest/respond.min.js'
+              'respond/dest/respond.min.js',
+              'jquery-timeout/jquery.timeout.js'
             ],
             dest: './static/dist/',
             filter: 'isFile',
