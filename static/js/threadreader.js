@@ -24,6 +24,8 @@ $(window).load(function() {
         // handler for tag identifiers
         $('.tree span[tag]').on('click', function (e) {
             $('#thread-list').load('/threadlist/' + $(this).attr('tag'));
+            $('.tree span[tag]').removeClass("selected-feed");
+            $(this).addClass("selected-feed");
             e.stopPropagation();
         });
 
