@@ -1,5 +1,7 @@
 <div>
     {% for item in thread %}
-        <p><a href="#">{{item['title']}}</a> ({{item['_collection']}})</p>
+        <p><!--<span class="item-date">{{utils.format_date(item['published'])}}</span>-->
+            <a href="#">{{item['title']}}</a>
+            ({{item['_collection']}})</p>
     {% end %}
 </div>
