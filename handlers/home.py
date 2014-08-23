@@ -60,3 +60,17 @@ class ThreadListHandler(BaseHandler):
         thread = ThreadStoreClient.instance().blocking_threadstore.thread(tag, 'threadreader', sort=[{"published": -1}])
         if thread:
             self.render('threadlist.html', thread=thread['items'], utils=utils)
+
+
+class AddFeedHandler(BaseHandler):
+
+    def get(self):
+        self.render('addfeed.html', utils=utils)
+
+    def post(self):
+        print(('body', self.request.body.decode('utf-8')))
+        tag_dir = ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory('threadreader', filter=r'\.')
+        self.render('index.html', foo=str(tag_dir), dir=tag_dir, utils=utils)
+
+
+

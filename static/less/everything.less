@@ -4,10 +4,14 @@
 @fa-font-path: "./";
 @icon-font-path: "./";
 
+// bootstrap customize variables
 @navbar-height: 30px;
 @navbar-icon-color: #aaa;
 @navbar-default-link-color: #a5a5a5;
 
+@input-color-placeholder: #ccc;
+
+// local customize variables
 @item-body-font: "Tahoma", Helvetica, Arial, sans-serif;
 @item-body-font-size: 14px;
 
@@ -23,7 +27,8 @@ body {
 
 .app-logo {
   color: @gray-light;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  font-size: 200%;
 }
 
 .main-menu {
@@ -82,7 +87,8 @@ h1 {
   li span {
     cursor:pointer;
     display:inline-block;
-    text-decoration:none
+    text-decoration:none;
+    line-height: 1.5;
   };
 
   .tree li.parent_li>span {
@@ -126,6 +132,19 @@ h1 {
   color: @gray-lighter;
 }
 
+#add-feed {
+  .input-group {
+    margin-bottom: 7px;
+    .input-group-addon {
+      min-width: 5em;
+    }
+  }
+  #add-feed-submit {
+  }
+  .align-right {
+    text-align: right;
+  }
+}
 //.tree li {
 //    list-style-type:none;
 //    margin:0;

@@ -24,7 +24,7 @@ TORNADO = settings(
     login_url = "/login",
     debug = True,
     serve_traceback = True,
-    xsrf_cookies = True,
+    # xsrf_cookies = True,
 )
 
 THREADSTORE = settings(

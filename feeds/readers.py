@@ -42,6 +42,7 @@ class RSSReader(BaseReader):
                                   subtitle=feed['subtitle'],
                                   updated=feed['updated'],
                                   ))
+        # TODO: get & cache favicon.ico
         # add feed entries
         for e in feed['entry']:
             post = {
@@ -74,4 +75,82 @@ class RSSReader(BaseReader):
   #     <name>John Gruber</name>
   #     <uri>http://daringfireball.net/</uri>
   #   </author>
-  #   <content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[
+  #   <content type="html" xml:base="http://daringfireball.net/linked/" xml:lang="en"><![CDATA[]]>>
+
+
+  # mime types for alternate links:
+  #  RSS - application/rss+xml
+  #  Atom - application/atom+xml
+
+    # jbw-mp.bin$ curl -XHEAD -v http://daringfireball.net/feeds/main
+    # * Adding handle: conn: 0x7f9831804000
+    # * Adding handle: send: 0
+    # * Adding handle: recv: 0
+    # * Curl_addHandleToPipeline: length: 1
+    # * - Conn 0 (0x7f9831804000) send_pipe: 1, recv_pipe: 0
+    # * About to connect() to daringfireball.net port 80 (#0)
+    # *   Trying 199.192.241.217...
+    # * Connected to daringfireball.net (199.192.241.217) port 80 (#0)
+    # > HEAD /feeds/main HTTP/1.1
+    # > User-Agent: curl/7.30.0
+    # > Host: daringfireball.net
+    # > Accept: */*
+    # >
+    # < HTTP/1.1 200 OK
+    # < Date: Sat, 23 Aug 2014 16:28:26 GMT
+    # * Server Apache is not blacklisted
+    # < Server: Apache
+    # < Content-Location: serve.php
+    # < Vary: negotiate,Accept-Encoding
+    # < TCN: choice
+    # < Served-By: Joyent
+    # < Last-Modified: Sat, 23 Aug 2014 16:28:03 GMT
+    # < ETag: "7b1a0d0d99485c7d680ceb3fd8634e74"
+    # < Connection: close
+    # < Content-Type: text/xml;charset=UTF-8
+    # <
+    # * Closing connection 0
+
+
+    # jbw-mp.bin$ curl -XGET -v http://daringfireball.net/ | more
+    # * Adding handle: conn: 0x7fe3f0804000
+    # * Adding handle: send: 0
+    # * Adding handle: recv: 0
+    # * Curl_addHandleToPipeline: length: 1
+    # * - Conn 0 (0x7fe3f0804000) send_pipe: 1, recv_pipe: 0
+    #   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+    #                                  Dload  Upload   Total   Spent    Left  Speed
+    #   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* About to connect() to daringfireball.net port 80 (#0)
+    # *   Trying 199.192.241.217...
+    # * Connected to daringfireball.net (199.192.241.217) port 80 (#0)
+    # > GET / HTTP/1.1
+    # > User-Agent: curl/7.30.0
+    # > Host: daringfireball.net
+    # > Accept: */*
+    # >
+    # < HTTP/1.1 200 OK
+    # < Date: Sat, 23 Aug 2014 16:32:26 GMT
+    # * Server Apache is not blacklisted
+    # < Server: Apache
+    # < Served-By: Joyent
+    # < Vary: Accept-Encoding
+    # < Connection: close
+    # < Transfer-Encoding: chunked
+    # < Content-Type: text/html; charset=UTF-8
+    # <
+    # { [data not shown]
+    # <!DOCTYPE html>
+    # <html lang="en">
+    # <head>
+    #         <meta charset="UTF-8" />
+    #         <title>Daring Fireball</title>
+    #
+    #         <meta name="viewport" content="width=600, initial-scale=0.5, minimum-scale=0.45" />     <link rel="apple-touch-icon-precomposed" href="/graphics/apple-touch-icon.png" />
+    #         <link rel="shortcut icon" href="/graphics/favicon.ico?v=005" />
+    #         <link rel="stylesheet" type="text/css" media="screen"  href="/css/fireball_screen.css?v1.52" />
+    #         <link rel="stylesheet" type="text/css" media="screen"  href="/css/ie_sucks.php" />
+    #         <link rel="stylesheet" type="text/css" media="print"   href="/css/fireball_print.css?v01" />
+    #         <link rel="alternate" type="application/atom+xml" href="/feeds/main" />
+    #         <script src="/js/js-global/FancyZoom.js" type="text/javascript"></script>
+    #         <script src="/js/js-global/FancyZoomHTML.js" type="text/javascript"></script>
+    # </head>
