@@ -5,6 +5,7 @@ import tornado.auth
 import tornado.gen
 
 from threadstore.client import ThreadStoreClient
+from feeds.readers import RSSReader
 
 log = logging.getLogger('handlers.home')
 
@@ -50,6 +51,7 @@ utils = TemplateUtils()
 class HomeHandler(BaseHandler):
 
     def get(self):
+        # supply structured tag directory for threadreader subspace posts
         tag_dir = ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory('threadreader', filter=r'\.')
         self.render('index.html', foo=str(tag_dir), dir=tag_dir, utils=utils)
 
@@ -68,7 +70,15 @@ class AddFeedHandler(BaseHandler):
         self.render('addfeed.html', utils=utils)
 
     def post(self):
-        print(('body', self.request.body.decode('utf-8')))
+        # add new feed, repull & return updated tag directory
+        url = self.get_body_argument('url')
+        if not url.startswith('http://'):
+            url = 'http://' + url
+        tags = self.get_body_argument('tags')
+        tags = list(map(str.strip, tags.split(',')))
+        # load feed
+        RSSReader(feed_url=url, tags=tags, user='@johnw').update()
+        # pull & return updated tag directory
         tag_dir = ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory('threadreader', filter=r'\.')
         self.render('index.html', foo=str(tag_dir), dir=tag_dir, utils=utils)
 

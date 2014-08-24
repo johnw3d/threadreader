@@ -16,11 +16,47 @@ class BaseReader(object):
 class RSSReader(BaseReader):
     "reader for RSS feeds"
 
-    def __init__(self, feed_url='', collection='', feed_tag='', tags=[]):
+    def __init__(self, feed_url='', collection='', feed_tag='', tags=[], user=''):
         self.feed_url = feed_url
         self.collection = collection
         self.feed_tag = feed_tag
         self.tags = tags
+        self.user = user
+
+    # def _create_feed(self, items, title='', subtitle='', updated=None):
+    #     # connect to threadstore
+    #     ts = ThreadStoreClient.instance().blocking_threadstore  # TODO: make async
+    #     if not self.collection:
+    #         # construct feed collection name
+    #         self.collection = 'threadreader.feeds.%s.%s' % (feed['user'], feed['title'])
+    #     if not self.feed_tag:
+    #         self.feed_tag = 'blog.%s' % feed['title']
+    #     # build or update feed collection
+    #     try:
+    #         col_id = ts.get_collection(self.collection)['_id']
+    #     except ItemNotFound:
+    #         col_id = ts.create_collection(self.collection, user=self.user)['_id']
+    #     ts.update_collection(dict(_id=col_id,
+    #                               title=feed['title'],
+    #                               subtitle=feed['subtitle'],
+    #                               updated=feed['updated'],
+    #                               ))
+    #     # TODO: get & cache favicon.ico
+    #     # add feed entries
+    #     for e in feed['entry']:
+    #         post = {
+    #             "type": "atom.feed.html",
+    #             "title": e['title'],
+    #             "published": e['published'],
+    #             "author": dict(e['author']),
+    #             "body": dict(e['content']),
+    #         }
+    # elif 'rss' in feed:
+    #     feed = feed['rss']['channel']
+    #
+    #
+    #
+    #         ts.create_post(col_id, user='@johnw', body=post, tags=self.tags + ['feed.%s' % self.feed_tag])
 
     def update(self):
         "polls feed for an update"
@@ -28,31 +64,45 @@ class RSSReader(BaseReader):
         from urllib import request
         # get & parse feed
         response = request.urlopen(self.feed_url)
-        feed = response.read()
-        feed = xmltodict.parse(feed)['feed']
-        # connect to threadstore
-        ts = ThreadStoreClient.instance().blocking_threadstore  # TODO: make async
-        # build or update feed collection
-        try:
-            col_id = ts.get_collection(self.collection)['_id']
-        except ItemNotFound:
-            col_id = ts.create_collection(self.collection, user='@johnw')['_id']
-        ts.update_collection(dict(_id=col_id,
-                                  title=feed['title'],
-                                  subtitle=feed['subtitle'],
-                                  updated=feed['updated'],
-                                  ))
-        # TODO: get & cache favicon.ico
-        # add feed entries
-        for e in feed['entry']:
-            post = {
-                "type": "atom.feed.html",
-                "title": e['title'],
-                "published": e['published'],
-                "author": dict(e['author']),
-                "body": dict(e['content']),
-            }
-            ts.create_post(col_id, user='@johnw', body=post, tags=self.tags + ['feed.%s' % self.feed_tag])
+        xml_data = response.read()
+        if xml_data:
+            feed = xmltodict.parse(xml_data)
+            if 'feed' in feed:
+                # Atom format
+                feed = feed['feed']
+                # connect to threadstore
+                ts = ThreadStoreClient.instance().blocking_threadstore  # TODO: make async
+                if not self.collection:
+                    # construct feed collection name
+                    self.collection = 'threadreader.feeds.%s.%s' % (self.user, feed['title'])
+                if not self.feed_tag:
+                    self.feed_tag = 'blog.%s' % feed['title']
+                # build or update feed collection
+                try:
+                    col_id = ts.get_collection(self.collection)['_id']
+                except ItemNotFound:
+                    col_id = ts.create_collection(self.collection, user=self.user)['_id']
+                ts.update_collection(dict(_id=col_id,
+                                          title=feed['title'],
+                                          subtitle=feed['subtitle'],
+                                          updated=feed['updated'],
+                                          ))
+                # TODO: get & cache favicon.ico
+                # add feed entries
+                for e in feed['entry']:
+                    post = {
+                        "type": "atom.feed.html",
+                        "title": e['title'],
+                        "published": e['published'],
+                        "author": dict(e['author']),
+                        "body": dict(e['content']),
+                    }
+            # elif 'rss' in feed:
+            #     feed = feed['rss']['channel']
+            #
+            #
+            #
+                    ts.create_post(col_id, user='@johnw', body=post, tags=self.tags + ['feed.%s' % self.feed_tag])
 
 
   # <title>Daring Fireball</title>
@@ -154,3 +204,48 @@ class RSSReader(BaseReader):
     #         <script src="/js/js-global/FancyZoom.js" type="text/javascript"></script>
     #         <script src="/js/js-global/FancyZoomHTML.js" type="text/javascript"></script>
     # </head>
+
+
+    # # RSS
+    #
+    # <?xml version="1.0" encoding="UTF-8"?>
+    # <?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss2full.xsl"?>
+    # <?xml-stylesheet type="text/css" media="screen" href="http://feeds.arstechnica.com/~d/styles/itemcontent.css"?>
+    # <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" version="2.0">
+    #   <channel>
+    #     <title>Ars Technica</title>
+    #     <link>http://arstechnica.com</link>
+    #     <description>The Art of Technology</description>
+    #     <lastBuildDate>Sat, 23 Aug 2014 20:04:43 +0000</lastBuildDate>
+    #     <language>en-US</language>
+    #     <sy:updatePeriod>hourly</sy:updatePeriod>
+    #     <sy:updateFrequency>1</sy:updateFrequency>
+    #     <generator>http://wordpress.org/?v=3.9.2</generator>
+    #     <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rss+xml" href="http://feeds.arstechnica.com/arstechnica/index"/>
+    #     <feedburner:info uri="arstechnica/index"/>
+    #     <atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/"/>
+    #     <item>
+    #       <title>CarPlay introductions quietly slip back into 2015</title>
+    #       <link>http://feeds.arstechnica.com/~r/arstechnica/index/~3/rEgK8RENCzY/</link>
+    #       <comments>http://arstechnica.com/cars/2014/08/carplay-introductions-quietly-slip-back-into-2015/#comments</comments>
+    #       <pubDate>Sat, 23 Aug 2014 19:30:14 +0000</pubDate>
+    #       <dc:creator><![CDATA[Jonathan M. Gitlin]]></dc:creator>
+    #       <category><![CDATA[Cars Technica]]></category>
+    #       <category><![CDATA[Infinite Loop]]></category>
+    #       <guid isPermaLink="false">http://arstechnica.com/?p=524263</guid>
+    #       <description><![CDATA[Car makers push back in-car iOS until next year]]></description>
+    #       <content:encoded><![CDATA[<div id="rss-wrap">
+    # <div>
+    #       <img src="http://cdn.arstechnica.net/wp-content/uploads/2014/08/CarPlay3-640x256.jpg">
+    # </div>
+    #  <p>CarPlay, Apple’s in-car iOS integration product, has shown up in flashy demos at various trade shows this year, but it will take a while before we see it on the roads, according to Lucas Mearian at <em><a href="http://www.computerworld.com/s/article/9250581/Carmakers_put_Apple_s_CarPlay_in_the_slow_lane">Computerworld</a></em>. Mercedes-Benz, Volvo, and Honda are all believed to be pushing back plans to include CarPlay in some of their new models until 2015.</p>
+    # <p>Apple’s influence on the automotive industry may have been unintentional at first, but the arrival of the iPod created an <a href="http://arstechnica.com/cars/2014/06/the-past-present-and-future-of-in-car-infotainment/">infotainment paradigm shift</a>. iPod owners wanted their MP3 players to connect to their cars. Less than a decade later and even the cheapest rental car now comes with a plethora of USB ports and wireless options for piping one’s tunes through the car’s speakers. CarPlay is an evolution of this approach, moving the display from the mobile device to the car’s center stack, as well as integrating Siri into the infotainment system.</p>
+    # <p>An Apple-created solution, (potentially) free of the kludginess that often comes with third-party systems may help sell cars to the 42 percent of American smartphone users who have iOS, but equally might do little to attract their Android-using counterparts, who outnumber them 5 to 4 domestically and by quite a considerable margin worldwide.</p>
+    # </div><p><a href="http://arstechnica.com/cars/2014/08/carplay-introductions-quietly-slip-back-into-2015/#p3">Read 1 remaining paragraphs</a> | <a href="http://arstechnica.com/cars/2014/08/carplay-introductions-quietly-slip-back-into-2015/?comments=1">Comments</a></p><div class="feedflare">
+    # <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=rEgK8RENCzY:YQcmha30iwQ:V_sGLiPBpWU"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=rEgK8RENCzY:YQcmha30iwQ:V_sGLiPBpWU" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=rEgK8RENCzY:YQcmha30iwQ:F7zBnMyn0Lo"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?i=rEgK8RENCzY:YQcmha30iwQ:F7zBnMyn0Lo" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=rEgK8RENCzY:YQcmha30iwQ:qj6IDK7rITs"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs" border="0"></img></a> <a href="http://feeds.arstechnica.com/~ff/arstechnica/index?a=rEgK8RENCzY:YQcmha30iwQ:yIl2AUoC8zA"><img src="http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA" border="0"></img></a>
+    # </div><img src="http://feeds.feedburner.com/~r/arstechnica/index/~4/rEgK8RENCzY" height="1" width="1"/>]]></content:encoded>
+    #       <wfw:commentRss>http://arstechnica.com/cars/2014/08/carplay-introductions-quietly-slip-back-into-2015/feed/</wfw:commentRss>
+    #       <slash:comments>0</slash:comments>
+    #       <feedburner:origLink>http://arstechnica.com/cars/2014/08/carplay-introductions-quietly-slip-back-into-2015/</feedburner:origLink>
+    #     </item>
+    #
