@@ -53,7 +53,7 @@ class HomeHandler(BaseHandler):
     def get(self):
         # supply structured tag directory for threadreader subspace posts
         tag_dir = ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory('threadreader', filter=r'\.')
-        self.render('index.html', foo=str(tag_dir), dir=tag_dir, utils=utils)
+        self.render('index.html', dir=tag_dir, utils=utils)
 
 
 class ThreadListHandler(BaseHandler):
@@ -80,7 +80,7 @@ class AddFeedHandler(BaseHandler):
         RSSReader(feed_url=url, tags=tags, user='@johnw').update()
         # pull & return updated tag directory
         tag_dir = ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory('threadreader', filter=r'\.')
-        self.render('index.html', foo=str(tag_dir), dir=tag_dir, utils=utils)
+        self.render('directory_tree.html', dir=tag_dir, utils=utils)
 
 
 

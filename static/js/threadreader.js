@@ -24,7 +24,7 @@ function prepareDirectoryTree() {
 
     // handler for tag identifiers
     $('.tree span[tag]').on('click', function (e) {
-        $('#main-col').load('/threadlist/' + $(this).attr('tag'), function() {
+        $('#main-col').load('/threadlist/' + encodeURIComponent($(this).attr('tag')), function() {
             var hoverPromise = null;
             //  add hide/show handler for clicks on item links
             $('#thread-list .item-link').on('click', function (e) {
@@ -73,8 +73,12 @@ $(window).load(function() {
             $('.tree span[tag]').removeClass("selected-feed");
             $('#main-col').load('/addfeed/', function() {
                 $('#add-feed #add-feed-form').on('submit', function(e) {
+                    $('#add-feed-submit').html('adding feed...')
                     // send new feed to server & reload directory tree
-                    $('#directory-tree').load('/addfeed/directory/', $(this).serializeArray(), prepareDirectoryTree());
+                    $('#directory-tree').load('/addfeed/directory/', $(this).serializeArray(), function() {
+                        $('#add-feed-submit').html('Done, add another feed');
+                        prepareDirectoryTree();
+                    });
                     e.preventDefault();
                 });
             });
