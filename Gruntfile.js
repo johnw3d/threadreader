@@ -23,6 +23,7 @@ module.exports = function(grunt) {
             src: [
               'bootstrap/dist/js/bootstrap.min.js',
               'bootstrap/dist/fonts/**',
+              'jquery/dist/jquery.js',  // for dev
               'jquery/dist/jquery.min.js',
               'jquery/dist/jquery.min.map',
               'jquery-ui/jquery-ui.min.js',

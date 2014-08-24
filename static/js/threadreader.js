@@ -35,7 +35,7 @@ function prepareDirectoryTree() {
                     item.hide('fast');
                 else
                     item.show('fast');
-                e.stopPropagation();
+                e.preventDefault();
             });
             // hover over item clears any pending hover-pad closes
             $('#thread-list .item-link').hover(function (e) {
@@ -73,10 +73,10 @@ $(window).load(function() {
             $('.tree span[tag]').removeClass("selected-feed");
             $('#main-col').load('/addfeed/', function() {
                 $('#add-feed #add-feed-form').on('submit', function(e) {
-                    $('#add-feed-submit').html('adding feed...')
+                    $('#add-feed-submit').html('adding feed...').addClass('add-feed-alert');
                     // send new feed to server & reload directory tree
                     $('#directory-tree').load('/addfeed/directory/', $(this).serializeArray(), function() {
-                        $('#add-feed-submit').html('Done, add another feed');
+                        $('#add-feed-submit').html('Done, add another feed').removeClass('add-feed-alert');
                         prepareDirectoryTree();
                     });
                     e.preventDefault();

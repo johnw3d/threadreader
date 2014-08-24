@@ -23,40 +23,34 @@ class RSSReader(BaseReader):
         self.tags = tags
         self.user = user
 
-    # def _create_feed(self, items, title='', subtitle='', updated=None):
-    #     # connect to threadstore
-    #     ts = ThreadStoreClient.instance().blocking_threadstore  # TODO: make async
-    #     if not self.collection:
-    #         # construct feed collection name
-    #         self.collection = 'threadreader.feeds.%s.%s' % (feed['user'], feed['title'])
-    #     if not self.feed_tag:
-    #         self.feed_tag = 'blog.%s' % feed['title']
-    #     # build or update feed collection
-    #     try:
-    #         col_id = ts.get_collection(self.collection)['_id']
-    #     except ItemNotFound:
-    #         col_id = ts.create_collection(self.collection, user=self.user)['_id']
-    #     ts.update_collection(dict(_id=col_id,
-    #                               title=feed['title'],
-    #                               subtitle=feed['subtitle'],
-    #                               updated=feed['updated'],
-    #                               ))
-    #     # TODO: get & cache favicon.ico
-    #     # add feed entries
-    #     for e in feed['entry']:
-    #         post = {
-    #             "type": "atom.feed.html",
-    #             "title": e['title'],
-    #             "published": e['published'],
-    #             "author": dict(e['author']),
-    #             "body": dict(e['content']),
-    #         }
-    # elif 'rss' in feed:
-    #     feed = feed['rss']['channel']
-    #
-    #
-    #
-    #         ts.create_post(col_id, user='@johnw', body=post, tags=self.tags + ['feed.%s' % self.feed_tag])
+    def _create_feed(self, posts, title='', subtitle='', updated=None):
+        # connect to threadstore
+        ts = ThreadStoreClient.instance().blocking_threadstore  # TODO: make async
+        if not self.collection:
+            # construct feed collection name
+            self.collection = 'threadreader.feeds.%s.%s' % (self.user, title)
+        # construct feed tag suffix
+        if not self.feed_tag:
+            self.feed_tag = '.blog.%s' % title
+        elif self.feed_tag[0] != '.':
+            self.feed_tag = '.' + self.feed_tag
+        # add feed tag suffix to all explicit tags, plus one for 'feed'
+        self.tags = [t + self.feed_tag for t in self.tags]
+        self.tags.append('feed' + self.feed_tag)
+        # build or update feed collection
+        try:
+            col_id = ts.get_collection(self.collection)['_id']
+        except ItemNotFound:
+            col_id = ts.create_collection(self.collection, user=self.user)['_id']
+        ts.update_collection(dict(_id=col_id,
+                                  title=title,
+                                  subtitle=subtitle,
+                                  updated=updated,
+                                  ))
+        # TODO: get & cache favicon.ico
+        # add feed entry posts
+        for post in posts:
+            ts.create_post(col_id, user='@johnw', body=post, tags=self.tags)
 
     def update(self):
         "polls feed for an update"
@@ -68,42 +62,30 @@ class RSSReader(BaseReader):
         if xml_data:
             feed = xmltodict.parse(xml_data)
             if 'feed' in feed:
-                # Atom format
+                # Atom format feed
                 feed = feed['feed']
-                # connect to threadstore
-                ts = ThreadStoreClient.instance().blocking_threadstore  # TODO: make async
-                if not self.collection:
-                    # construct feed collection name
-                    self.collection = 'threadreader.feeds.%s.%s' % (self.user, feed['title'])
-                if not self.feed_tag:
-                    self.feed_tag = 'blog.%s' % feed['title']
-                # build or update feed collection
-                try:
-                    col_id = ts.get_collection(self.collection)['_id']
-                except ItemNotFound:
-                    col_id = ts.create_collection(self.collection, user=self.user)['_id']
-                ts.update_collection(dict(_id=col_id,
-                                          title=feed['title'],
-                                          subtitle=feed['subtitle'],
-                                          updated=feed['updated'],
-                                          ))
                 # TODO: get & cache favicon.ico
-                # add feed entries
-                for e in feed['entry']:
-                    post = {
+                # construct feed entry posts & add feed
+                posts = [{
                         "type": "atom.feed.html",
                         "title": e['title'],
                         "published": e['published'],
                         "author": dict(e['author']),
-                        "body": dict(e['content']),
-                    }
-            # elif 'rss' in feed:
-            #     feed = feed['rss']['channel']
-            #
-            #
-            #
-                    ts.create_post(col_id, user='@johnw', body=post, tags=self.tags + ['feed.%s' % self.feed_tag])
-
+                        "body": e['content']['#text'],
+                    } for e in feed['entry']]
+                self._create_feed(posts, feed['title'], feed['subtitle'], feed['updated'])
+            elif 'rss' in feed:
+                # RSS format feed
+                feed = feed['rss']['channel']
+                # construct feed entry posts & add feed
+                posts = [{
+                        "type": "rss.feed.html",
+                        "title": e['title'],
+                        "published": e['pubDate'],
+                        "author": e['dc:creator'],
+                        "body": e['content:encoded'],
+                    } for e in feed['item']]
+                self._create_feed(posts, feed['title'], feed['description'], feed['lastBuildDate'])
 
   # <title>Daring Fireball</title>
   # <subtitle>By John Gruber</subtitle>

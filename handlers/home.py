@@ -44,7 +44,7 @@ class TemplateUtils(object):
 
     def item_html(self, item):
         "extract RSS item HTML"
-        return item['body']['#text']
+        return item['body']
 
 utils = TemplateUtils()
 
