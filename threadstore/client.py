@@ -75,12 +75,12 @@ class ThreadStoreClient(object):
                 feed_tag="blog.kottke",
                 tags=[],
             ),
-            dict(
-                feed_url="http://daringfireball.net/feeds/main",
-                collection='threadreader.feeds.blog.daringfireball',
-                feed_tag="blog.daringfireball",
-                tags=[],
-            )
+            # dict(
+            #     feed_url="http://daringfireball.net/feeds/main",
+            #     collection='threadreader.feeds.blog.daringfireball',
+            #     feed_tag="blog.daringfireball",
+            #     tags=[],
+            # )
         ]
         # load test feeds
         from feeds.readers import RSSReader

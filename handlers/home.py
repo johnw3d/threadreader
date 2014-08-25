@@ -70,7 +70,7 @@ class AddFeedHandler(BaseHandler):
         self.render('addfeed.html', utils=utils)
 
     def post(self):
-        # add new feed, repull & return updated tag directory
+        "add new feed, repull & return updated tag directory"
         url = self.get_body_argument('url')
         if not url.startswith('http://'):
             url = 'http://' + url

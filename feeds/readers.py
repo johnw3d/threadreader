@@ -7,6 +7,12 @@
 #
 __author__ = 'johnw'
 
+import xmltodict
+import urllib.request, urllib.error, urllib.parse
+import re
+
+from bs4 import BeautifulSoup
+
 from threadstore.client import ThreadStoreClient, ItemNotFound
 
 class BaseReader(object):
@@ -54,24 +60,20 @@ class RSSReader(BaseReader):
 
     def update(self):
         "polls feed for an update"
-        import xmltodict
-        from urllib import request
+        # TODO: get & cache favicon.ico
         # get & parse feed
-        response = request.urlopen(self.feed_url)
-        xml_data = response.read()
-        if xml_data:
-            feed = xmltodict.parse(xml_data)
+        feed = self._get_feed_xml()
+        if feed:
             if 'feed' in feed:
                 # Atom format feed
                 feed = feed['feed']
-                # TODO: get & cache favicon.ico
                 # construct feed entry posts & add feed
                 posts = [{
                         "type": "atom.feed.html",
                         "title": e['title'],
                         "published": e['published'],
                         "author": dict(e['author']),
-                        "body": e['content']['#text'],
+                        "body": self._clean_html(e['content']['#text']),
                     } for e in feed['entry']]
                 self._create_feed(posts, feed['title'], feed['subtitle'], feed['updated'])
             elif 'rss' in feed:
@@ -82,10 +84,40 @@ class RSSReader(BaseReader):
                         "type": "rss.feed.html",
                         "title": e['title'],
                         "published": e['pubDate'],
-                        "author": e['dc:creator'],
-                        "body": e['content:encoded'],
+                        "author": e.get('dc:creator'),
+                        "body": self._clean_html(e.get('content:encoded', e.get('description'))),
                     } for e in feed['item']]
-                self._create_feed(posts, feed['title'], feed['description'], feed['lastBuildDate'])
+                self._create_feed(posts, feed['title'], feed['description'], feed.get('lastBuildDate'))
+
+    feed_type_pat = re.compile(r'^(application/rss\+xml|application/rdf\+xml|application/atom\+xml|application/xml|text/xml).*')
+
+    def _get_feed_xml(self, recursing=False):
+        "locate an RSS feed at given URL, via <link alternate> header if needed in a normal html web page"
+        # get & parse response from initially-given feed URL
+        try:
+            response = urllib.request.urlopen(self.feed_url)
+        except urllib.error.HTTPError as e:
+            return None
+        ct = response.getheader("Content-Type", '')
+        doc = response.read()
+        if not recursing and ct.startswith('text/html'):
+            # got HTML, maybe home page, check for link alternates of right type in head
+            soup = BeautifulSoup(doc)
+            feed_link = soup.find('link', rel="alternate", type=self.feed_type_pat)
+            if feed_link:
+                # found possible feed alternate
+                alt_href = feed_link.get('href')
+                if alt_href:
+                    # update feed url & try again (but allow only one indirection)
+                    self.feed_url = urllib.parse.urljoin(self.feed_url, alt_href)
+                    return self._get_feed_xml(recursing=True)
+        elif self.feed_type_pat.match(ct) and doc:
+            # we have putative feed xml, parse it
+            return xmltodict.parse(doc)
+
+    def _clean_html(self, html):
+        "cleans scripts & other bad stuff from feed item body HTML"
+        return html.replace('<script>', '<!--script>').replace('<script ', '<!--script ').replace('</script>', '</script-->')
 
   # <title>Daring Fireball</title>
   # <subtitle>By John Gruber</subtitle>
