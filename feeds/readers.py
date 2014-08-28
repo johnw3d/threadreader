@@ -88,6 +88,7 @@ class RSSReader(BaseReader):
                         "body": self._clean_html(e.get('content:encoded', e.get('description'))),
                     } for e in feed['item']]
                 self._create_feed(posts, feed['title'], feed['description'], feed.get('lastBuildDate'))
+        return self
 
     feed_type_pat = re.compile(r'^(application/rss\+xml|application/rdf\+xml|application/atom\+xml|application/xml|text/xml).*')
 

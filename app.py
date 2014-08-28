@@ -10,7 +10,7 @@ import tornado.ioloop
 import tornado.web
 
 import settings
-from handlers.home import HomeHandler, ThreadListHandler, AddFeedHandler
+from handlers.home import HomeHandler, ThreadListHandler, AddFeedHandler, ItemTagHandler
 
 from threadstore.client import ThreadStoreClient
 
@@ -19,6 +19,7 @@ handlers = [
     (r"/threadlist/(.*)", ThreadListHandler),
     (r"/addfeed/", AddFeedHandler),
     (r"/addfeed/directory/", AddFeedHandler),
+    (r"/itemtag/(.*)", ItemTagHandler),
 ]
 
 log = logging.getLogger('app')

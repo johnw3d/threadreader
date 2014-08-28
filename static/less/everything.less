@@ -73,7 +73,7 @@ h1 {
   li {
     list-style-type:none;
     margin:0;
-    position:relative
+    position:relative;
   };
 
   ul {
@@ -82,6 +82,7 @@ h1 {
 
   >ul {
     padding: 0 0 0 0px;
+    width: 200px;
   };
 
   li span {
@@ -105,31 +106,53 @@ h1 {
 
   li.parent_li i.tree-folder {
     cursor: pointer;
-    margin-right: 3px;
+    margin-right: 5px;
     &:hover {
       background: #ddd;
+    };
+    color: @gray-light;
+  }
+
+  .folder-item {
+    width: 100%;
+  }
+
+  .item-count {
+    color: @gray-light;
+    font-size: 80%;
+    float: right;
+  }
+}
+
+#thread-list {
+  .item-body {
+    margin-left: 20px;
+    blockquote {
+      font-family: @item-body-font;
+      font-size: @item-body-font-size;
     }
   }
-}
-
-.item-body {
-  margin-left: 20px;
-  blockquote {
-    font-family: @item-body-font;
-    font-size: @item-body-font-size;
+  .item-header {
+    width: 100%;
+    margin: 5px;
   }
-}
-
-.selected-feed {
-  background-color:#dde;
-}
-
-.item-date {
-  font-size: 80%;
-}
-
-.hover-pad {
-  color: @gray-lighter;
+  .item-input {
+    font-size: 11px;
+    line-height: 1;
+    text-align: right;
+    input {
+      width: 25em;
+    }
+  }
+  .selected-feed {
+    background-color: #dde;
+  }
+  .item-date {
+    font-size: 80%;
+  }
+  .hover-pad {
+    color: @gray-lighter;
+  }
 }
 
 #add-feed {
