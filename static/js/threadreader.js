@@ -17,6 +17,91 @@ function reopenTree(newTag) {
             $('.tree span[tag="' + tag + '"]').closest('li.parent_li').find(' > ul > li').show();
 }
 
+function selectThread(tag) {
+    // selected thread for given tag, reveal it in directory, load into threadlist
+    // first reveal in directory
+    var tag_span = $('.tree span[tag="' + tag + '"]');
+    var parent_li = tag_span.parents('li.parent_li');
+    var children = parent_li.find(' > ul > li');
+    children.show('fast');
+    parent_li.each(function() {
+        // record open state of all parents in treeState
+        var parent_tag = $(this).find('> span > span[tag]').attr('tag');
+        treeState[parent_tag] = true;
+    });
+    // flip to close handle
+    parent_li.find('i.tree-folder').attr('title', 'Collapse').addClass('fa-minus-square-o').removeClass('fa-plus-square-o');
+    // open thread
+    openThread(tag);
+}
+
+function openThread(tag) {
+    // open thread in main-col
+    $('#main-col').load('/threadlist/' + encodeURIComponent(tag), function() {
+        var hoverPromise = null;
+        //  add hide/show handler for clicks on item links
+        $('#thread-list .item-link').on('click', function (e) {
+            if (hoverPromise)
+                hoverPromise.clear();
+            var parent_div = $(this).closest('div');
+            var item = parent_div.find('.item-body');
+            if (item.is(":visible")) {
+                parent_div.find('.item-header').hide('fast');
+                item.hide('fast');
+            }
+            else {
+                parent_div.find('.item-header').show('fast');
+                item.show('fast');
+            }
+            e.preventDefault();
+        });
+        // hover over item clears any pending hover-pad closes
+        $('#thread-list .item-link').hover(function (e) {
+            if (hoverPromise)
+                hoverPromise.clear();
+        });
+        // add hover-reveal handler for item
+        $('#thread-list .hover-pad').hover(function (e) {
+            var item = $(this).closest('div').find('.item-body');
+            if (!item.is(":visible")) {
+                // open if we are over pad for >= 250ms
+                hoverPromise = $.timeout(250).done(function() {
+                    item.show('fast');
+                })
+            }
+            e.stopPropagation();
+        }, function(e) {
+            if (hoverPromise)
+                hoverPromise.clear();
+            var item = $(this).closest('div').find('.item-body');
+            if (item.is(":visible"))
+                // delay close giving time for a hover over item link to keep it open
+                hoverPromise = $.timeout(500).done(function() {
+                    item.hide('fast');
+                });
+        });
+        // add new item tags
+        $('#thread-list .add-item-tags').on('click', function (e) {
+            var input = $(this).siblings('input[name=tags]');
+            $('#directory-tree').load('/itemtag/' + $(this).attr("item"), {tags: input.val()}, function() {
+                input.val('');
+                prepareDirectoryTree();
+                reopenTree();
+            });
+            e.preventDefault();
+        });
+        // associated threads selector
+        $('#thread-list select[name=threads]').change(function (e) {
+            // select thread for this option's tag
+            var tag = $(this).val();
+            selectThread(tag);
+            e.preventDefault();
+        });
+    });
+    $('.tree span[tag]').removeClass("selected-feed");
+    $('.tree span[tag="' + tag + '"]').addClass("selected-feed");
+}
+
 function prepareDirectoryTree() {
     // decorate parent <ul>s
     $('.tree li:has(ul)').addClass('parent_li').find('i.tree-folder').attr('title', 'Expand this branch');
@@ -37,65 +122,10 @@ function prepareDirectoryTree() {
         e.stopPropagation();
     });
 
-    // handler for tag identifiers
+    // handler for tag identifiers in the directory, click to open tag's thread
     $('.tree span[tag]').on('click', function (e) {
-        $('#main-col').load('/threadlist/' + encodeURIComponent($(this).attr('tag')), function() {
-            var hoverPromise = null;
-            //  add hide/show handler for clicks on item links
-            $('#thread-list .item-link').on('click', function (e) {
-                if (hoverPromise)
-                    hoverPromise.clear();
-                var parent_div = $(this).closest('div');
-                var item = parent_div.find('.item-body');
-                if (item.is(":visible")) {
-                    parent_div.find('.item-header').hide('fast');
-                    item.hide('fast');
-                }
-                else {
-                    parent_div.find('.item-header').show('fast');
-                    item.show('fast');
-                }
-                e.preventDefault();
-            });
-            // hover over item clears any pending hover-pad closes
-            $('#thread-list .item-link').hover(function (e) {
-                if (hoverPromise)
-                    hoverPromise.clear();
-            });
-            // add hover-reveal handler for item
-            $('#thread-list .hover-pad').hover(function (e) {
-                var item = $(this).closest('div').find('.item-body');
-                if (!item.is(":visible")) {
-                    // open if we are over pad for >= 250ms
-                    hoverPromise = $.timeout(250).done(function() {
-                        item.show('fast');
-                    })
-                }
-                e.stopPropagation();
-            }, function(e) {
-                if (hoverPromise)
-                    hoverPromise.clear();
-                var item = $(this).closest('div').find('.item-body');
-                if (item.is(":visible"))
-                    // delay close giving time for a hover over item link to keep it open
-                    hoverPromise = $.timeout(500).done(function() {
-                        item.hide('fast');
-                    });
-            });
-            // add item tags
-            $('#thread-list .add-item-tags').on('click', function (e) {
-                var input = $(this).siblings('input[name=tags]');
-                $('#directory-tree').load('/itemtag/' + $(this).attr("item"), {tags: input.val()}, function() {
-                    input.val('');
-                    prepareDirectoryTree();
-                    reopenTree();
-                });
-                e.preventDefault();
-            });
-        });
-        $('.tree span[tag]').removeClass("selected-feed");
-        $(this).addClass("selected-feed");
-        e.stopPropagation();
+        var tag = $(this).attr('tag');
+        openThread(tag);
     });
 }
 
