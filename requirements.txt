@@ -5,3 +5,4 @@ tornado>=4.0
 pymongo==2.7.2
 xmltodict==0.9.0
 beautifulsoup4==4.3.2
+python-dateutil>=2.2

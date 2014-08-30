@@ -1,4 +1,6 @@
 import logging
+import datetime
+
 import tornado.ioloop
 import tornado.web
 import tornado.auth
@@ -56,6 +58,20 @@ class TemplateUtils(object):
     def format_date(self, date):
         "reformats datestamp"
         return date
+
+    def elapsedSinceDateTime(self, date_time):
+        "gens display form of elapsed time since date until now"
+        now = datetime.datetime.now(datetime.timezone.utc)
+        dt = now - date_time
+        if dt.days:
+            return ('%d days' % dt.days) if dt.days > 1 else '1 day'
+        else:
+            minutes = dt.seconds / 60
+            if minutes < 60:
+                return ('%d minutes' % minutes) if minutes > 1 else '1 minute'
+            else:
+                hours = minutes / 60
+                return ('%d hours' % hours) if hours > 1 else '< 1 hour'
 
     def item_html(self, item):
         "extract RSS item HTML"

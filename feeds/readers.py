@@ -10,6 +10,7 @@ __author__ = 'johnw'
 import xmltodict
 import urllib.request, urllib.error, urllib.parse
 import re
+import dateutil.parser
 
 from bs4 import BeautifulSoup
 
@@ -51,7 +52,7 @@ class RSSReader(BaseReader):
         ts.update_collection(dict(_id=col_id,
                                   title=title,
                                   subtitle=subtitle,
-                                  updated=updated,
+                                  updated=dateutil.parser.parse(updated) if updated else None,
                                   ))
         # TODO: get & cache favicon.ico
         # add feed entry posts
@@ -71,7 +72,7 @@ class RSSReader(BaseReader):
                 posts = [{
                         "type": "atom.feed.html",
                         "title": e['title'],
-                        "published": e['published'],
+                        "published": dateutil.parser.parse(e['published']),
                         "author": dict(e['author']),
                         "body": self._clean_html(e['content']['#text']),
                     } for e in feed['entry']]
@@ -83,7 +84,7 @@ class RSSReader(BaseReader):
                 posts = [{
                         "type": "rss.feed.html",
                         "title": e['title'],
-                        "published": e['pubDate'],
+                        "published": dateutil.parser.parse(e['pubDate']),
                         "author": e.get('dc:creator'),
                         "body": self._clean_html(e.get('content:encoded', e.get('description'))),
                     } for e in feed['item']]

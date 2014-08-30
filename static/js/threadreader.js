@@ -31,11 +31,11 @@ function selectThread(tag) {
     });
     // flip to close handle
     parent_li.find('i.tree-folder').attr('title', 'Collapse').addClass('fa-minus-square-o').removeClass('fa-plus-square-o');
-    // open thread
-    openThread(tag);
+    // display thread
+    displayThread(tag);
 }
 
-function openThread(tag) {
+function displayThread(tag) {
     // open thread in main-col
     $('#main-col').load('/threadlist/' + encodeURIComponent(tag), function() {
         var hoverPromise = null;
@@ -122,10 +122,10 @@ function prepareDirectoryTree() {
         e.stopPropagation();
     });
 
-    // handler for tag identifiers in the directory, click to open tag's thread
+    // handler for tag identifiers in the directory, click to display tag's thread
     $('.tree span[tag]').on('click', function (e) {
         var tag = $(this).attr('tag');
-        openThread(tag);
+        displayThread(tag);
     });
 }
 

@@ -5,7 +5,7 @@
                 <i class="fa fa-square hover-pad"></i>
                 <!--<span class="item-date">{{utils.format_date(item['published'])}}</span>-->
                 <a href="#" class="item-link">{{item['title']}}</a>
-                ({{item['_collection']}})</p>
+                ({{item['_collection']}})<span class="elapsed-pubdate">{{ utils.elapsedSinceDateTime(item['published']) }}</span></p>
             <div class="item-header" style="display: none">
                 <div class="item-input">
                     threads:
