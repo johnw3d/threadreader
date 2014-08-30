@@ -16,9 +16,13 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def _get_tags_dir(self):
         "get an up-to-date structured tag directory for all threadreader collections"
-        return ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory('threadreader',
+        return ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory(collection='threadreader.feeds',
                                                                                      counts=True,
                                                                                      filter={"$not":{"$regex": r'tagging|taggedBy'}})
+    def _get_feeds_dir(self):
+        "get an up-to-date structured feed directory for all threadreader collections"
+        return ThreadStoreClient.instance().blocking_threadstore.posts_collection_directory(collection='threadreader.feeds',
+                                                                                     counts=True)
 
 
 class TemplateUtils(object):

@@ -1,7 +1,7 @@
 #  readers.py - feed readers - generate threadreader item posts from RSS feeds
 #
 # TODO: factor this out into a separate feeds module for other apps to use
-# TODO: need an async Tornado version
+# TODO: need an async Tornado version for prod
 #
 # Copyright (c) John Wainwright 2014 - All rights reserved.
 #
@@ -14,7 +14,7 @@ import dateutil.parser
 
 from bs4 import BeautifulSoup
 
-from threadstore.client import ThreadStoreClient, ItemNotFound
+from threadstore.client import ThreadStoreClient, ItemNotFound, ThreadStore
 
 class BaseReader(object):
     "base feed reader"
@@ -23,7 +23,7 @@ class BaseReader(object):
 class RSSReader(BaseReader):
     "reader for RSS feeds"
 
-    def __init__(self, feed_url='', collection='', feed_tag='', tags=[], user=''):
+    def __init__(self, feed_url='', collection='', feed_tag='', tags=[], user='@johnw'):  #TODO: insist on user
         self.feed_url = feed_url
         self.collection = collection
         self.feed_tag = feed_tag
@@ -33,17 +33,14 @@ class RSSReader(BaseReader):
     def _create_feed(self, posts, title='', subtitle='', updated=None):
         # connect to threadstore
         ts = ThreadStoreClient.instance().blocking_threadstore  # TODO: make async
+        title = ThreadStore.tag_escape(title)
         if not self.collection:
             # construct feed collection name
             self.collection = 'threadreader.feeds.%s.%s' % (self.user, title)
-        # construct feed tag suffix
+        # construct feed tag, for now just escaped title if not supplied
         if not self.feed_tag:
-            self.feed_tag = '.blog.%s' % title
-        elif self.feed_tag[0] != '.':
-            self.feed_tag = '.' + self.feed_tag
-        # add feed tag suffix to all explicit tags, plus one for 'feed'
-        self.tags = [t + self.feed_tag for t in self.tags]
-        self.tags.append('feed' + self.feed_tag)
+            self.feed_tag = 'feed:' + title
+        self.tags.append(self.feed_tag)
         # build or update feed collection
         try:
             col_id = ts.get_collection(self.collection)['_id']

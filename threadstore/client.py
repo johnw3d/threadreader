@@ -71,8 +71,6 @@ class ThreadStoreClient(object):
         test_feeds = [
             dict(
                 feed_url="http://feeds.kottke.org/main",
-                collection='threadreader.feeds.blog.kottke',
-                feed_tag="blog.kottke",
                 tags=[],
             ),
             # dict(
