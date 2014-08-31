@@ -14,14 +14,14 @@ log = logging.getLogger('handlers.home')
 class BaseHandler(tornado.web.RequestHandler):
     "base threadreader request handler"
 
-    def _get_tags_dir(self):
+    def _get_threads_dir(self):
         "get an up-to-date structured tag directory for all threadreader collections"
         return ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory(collection='threadreader.feeds',
                                                                                      counts=True,
                                                                                      filter={"$not":{"$regex": r'tagging|taggedBy'}})
     def _get_feeds_dir(self):
-        "get an up-to-date structured feed directory for all threadreader collections"
-        return ThreadStoreClient.instance().blocking_threadstore.posts_collection_directory(collection='threadreader.feeds',
+        "get an up-to-date structured of all threadreader feed collections"
+        return ThreadStoreClient.instance().blocking_threadstore.collection_directory(collection='threadreader.feeds',
                                                                                      counts=True)
 
 
@@ -95,8 +95,11 @@ class HomeHandler(BaseHandler):
 
     def get(self):
         # supply structured tag directory for threadreader subspace posts
-        tag_dir = self._get_tags_dir()
-        self.render('index.html', dir=tag_dir, new_feed=None, utils=utils)
+        self.render('index.html',
+                    thread_dir=self._get_threads_dir(),
+                    feed_dir=self._get_feeds_dir(),
+                    new_feed=None,
+                    utils=utils)
 
 class ThreadListHandler(BaseHandler):
 
@@ -128,8 +131,11 @@ class AddFeedHandler(BaseHandler):
         # load feed
         feed = RSSReader(feed_url=url, tags=tags, user='@johnw').update()
         # pull & return updated tag directory
-        tag_dir = self._get_tags_dir()
-        self.render('directory_tree.html', dir=tag_dir, new_feed=feed.feed_tag, utils=utils)
+        self.render('directory_tree.html',
+                    thread_dir=self._get_threads_dir(),
+                    feed_dir=self._get_feeds_dir(),
+                    new_feed=feed.feed_tag,
+                    utils=utils)
 
 
 class ItemTagHandler(BaseHandler):
@@ -141,5 +147,8 @@ class ItemTagHandler(BaseHandler):
             tags = list(map(str.strip, tags.split(',')))
         ThreadStoreClient.instance().blocking_threadstore.update_tags(item, user='@johnw', add_tags=tags)
         # pull & return updated tag directory
-        tag_dir = self._get_tags_dir()
-        self.render('directory_tree.html', dir=tag_dir, new_feed=None, utils=utils)
+        self.render('directory_tree.html',
+                    thread_dir=self._get_threads_dir(),
+                    feed_dir=self._get_feeds_dir(),
+                    new_feed=None,
+                    utils=utils)
