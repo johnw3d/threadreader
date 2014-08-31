@@ -109,7 +109,9 @@ function displayThread(tag) {
             $('#directory-tree').load('/itemtag/' + item_id, {tags: input.val()}, function() {
                 input.val('');
                 $(selector_span_id).load('/threadselector/item/' + item_id, function() {
-                    $(selector_span_id + '> select').change(thread_select_handler);
+                    var selector = $(selector_span_id + '> select');
+                    selector.change(thread_select_handler);
+                    selector.val($('#thread-list').attr("thread"));
                 });
                 prepareDirectoryTree();
                 reopenTree();

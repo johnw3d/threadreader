@@ -110,7 +110,7 @@ class ThreadSelectorHandler(BaseHandler):
     def get(self, item_id):
         item = ThreadStoreClient.instance().blocking_threadstore.get_post(item_id)
         if item:
-            self.render('thread_select.html', item=item, utils=utils)
+            self.render('thread_select.html', item=item, thread_tag=None, utils=utils)
 
 class AddFeedHandler(BaseHandler):
 
