@@ -92,23 +92,28 @@ function displayThread(tag) {
                     item.hide('fast');
                 });
         });
+        // associated threads selector
+        var thread_select_handler = function (e) {
+            // select thread for this option's tag
+            var tag = $(this).val();
+            selectThread(tag);
+            e.preventDefault();
+        };
+        $('#thread-list select[name=threads]').change(thread_select_handler);
         // add new item tags
         $('#thread-list .add-item-tags').on('click', function (e) {
             var input = $(this).siblings('input[name=tags]');
             var item_id = $(this).attr("item");
+            var selector_span_id = '#thread-sel-' + item_id;
+            // reconstruct directory & reload my threads selector
             $('#directory-tree').load('/itemtag/' + item_id, {tags: input.val()}, function() {
                 input.val('');
-                $('#thread-sel-' + item_id).load('/threadselector/item/' + item_id);
+                $(selector_span_id).load('/threadselector/item/' + item_id, function() {
+                    $(selector_span_id + '> select').change(thread_select_handler);
+                });
                 prepareDirectoryTree();
                 reopenTree();
             });
-            e.preventDefault();
-        });
-        // associated threads selector
-        $('#thread-list select[name=threads]').change(function (e) {
-            // select thread for this option's tag
-            var tag = $(this).val();
-            selectThread(tag);
             e.preventDefault();
         });
     });

@@ -103,7 +103,7 @@ class ThreadListHandler(BaseHandler):
     def get(self, tag):
         thread = ThreadStoreClient.instance().blocking_threadstore.thread(tag, 'threadreader', sort=[{"published": -1}])
         if thread:
-            self.render('threadlist.html', thread=thread['items'], utils=utils)
+            self.render('threadlist.html', thread=thread['items'], thread_tag=tag, utils=utils)
 
 class ThreadSelectorHandler(BaseHandler):
 
