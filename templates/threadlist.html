@@ -1,11 +1,18 @@
 <div id="thread-list" thread="{{thread_tag}}">
+    <div class="thread-header">
+        <span class="thread-title">{{thread_tag}}</span>
+        <span class="thread-tools">
+            <i class="fa fa-cog thread-edit" title="Edit settings"></i>
+            <i class="fa fa-refresh thread-refresh" title="Refresh thread"></i>
+        </span>
+    </div>
     {% for item in thread %}
         <div>
             <p>
                 <i class="fa fa-square hover-pad"></i>
                 <!--<span class="item-date">{{utils.format_date(item['published'])}}</span>-->
                 <a href="#" class="item-link" id="{{item['_id']}}">{{item['title']}}</a>
-                <span class="home-feed">({{ utils.home_feed(item)}})</span>
+                <span class="home-feed">({{utils.home_feed(item)}})</span>
                 <span class="elapsed-pubdate">{{ utils.elapsedSinceDateTime(item['published']) }}</span></p>
             <div class="item-header" style="display: none">
                 <div class="item-input">

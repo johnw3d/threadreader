@@ -159,7 +159,7 @@ $(window).load(function() {
             $('.tree span[tag]').removeClass("selected-feed");
             $('#main-col').load('/addfeed/', function() {
                 $('#add-feed #add-feed-form').on('submit', function(e) {
-                    $('#add-feed-submit').html('adding feed...').addClass('add-feed-alert');
+                    $('#add-feed-submit').html('<i class="fa fa-spinner fa-spin"></i> adding feed...').addClass('add-feed-alert');
                     // send new feed to server & reload directory tree
                     $('#directory-tree').load('/addfeed/directory/', $(this).serializeArray(), function() {
                         $('#add-feed-submit').html('Done, add another feed').removeClass('add-feed-alert');
