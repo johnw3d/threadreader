@@ -71,7 +71,6 @@ class ThreadStoreClient(object):
         test_feeds = [
             dict(
                 feed_url="http://feeds.kottke.org/main",
-                tags=[],
             ),
             # dict(
             #     feed_url="http://daringfireball.net/feeds/main",

@@ -4,18 +4,15 @@
             <p>
                 <i class="fa fa-square hover-pad"></i>
                 <!--<span class="item-date">{{utils.format_date(item['published'])}}</span>-->
-                <a href="#" class="item-link">{{item['title']}}</a>
-                ({{item['_collection']}})<span class="elapsed-pubdate">{{ utils.elapsedSinceDateTime(item['published']) }}</span></p>
+                <a href="#" class="item-link" id="{{item['_id']}}">{{item['title']}}</a>
+                <span class="home-feed">({{ utils.home_feed(item)}})</span>
+                <span class="elapsed-pubdate">{{ utils.elapsedSinceDateTime(item['published']) }}</span></p>
             <div class="item-header" style="display: none">
                 <div class="item-input">
                     threads:
-                    <select name="threads">
-                        {% for tag in item['_tags'] %}
-                            {% if tag != 'tagging' and not tag.startswith('taggedBy:') %}
-                                <option value="{{tag}}">{{tag}}</option>
-                            {% end %}
-                        {% end %}
-                    </select>
+                    <span id="thread-sel-{{item['_id']}}">
+                        {% include "thread_select.html" %}
+                    </span>
                     <input name="tags" type="text" placeholder="new tags"> <a href="" item="{{item['_id']}}" class="add-item-tags">add tags</a>
                 </div>
             </div>

@@ -27,7 +27,7 @@ class RSSReader(BaseReader):
         self.feed_url = feed_url
         self.collection = collection
         self.feed_tag = feed_tag
-        self.tags = tags
+        self.tags = tags or []
         self.user = user
 
     def _create_feed(self, posts, title='', subtitle='', updated=None):

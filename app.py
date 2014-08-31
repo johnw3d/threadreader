@@ -10,13 +10,15 @@ import tornado.ioloop
 import tornado.web
 
 import settings
-from handlers.home import HomeHandler, ThreadListHandler, AddFeedHandler, ItemTagHandler
+from handlers.home import (HomeHandler, ThreadListHandler, AddFeedHandler,
+                           ItemTagHandler, ThreadSelectorHandler, )
 
 from threadstore.client import ThreadStoreClient
 
 handlers = [
     (r"/", HomeHandler),
     (r"/threadlist/(.*)", ThreadListHandler),
+    (r"/threadselector/item/(.*)", ThreadSelectorHandler),
     (r"/addfeed/", AddFeedHandler),
     (r"/addfeed/directory/", AddFeedHandler),
     (r"/itemtag/(.*)", ItemTagHandler),

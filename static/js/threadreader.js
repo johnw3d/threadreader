@@ -8,13 +8,25 @@
 
 var treeState = { }
 
-function reopenTree(newTag) {
-    // reopen newly-installed tree-directory from treeState + open newTag
-    if (newTag)
-        treeState[newTag] = true;
+function reopenTree() {
+    // reopen newly-installed tree-directory from treeState + ensure new-feed is visible if supplied
+    $('.tree[new_feed]').each(function() {
+        var new_feed = $(this).attr('new_feed');
+        var parent_li = $('.tree span[tag="' + new_feed + '"]').parents('li.parent_li');
+        parent_li.each(function() {
+            // set open state of all parents of new-feed in treeState
+            var parent_tag = $(this).find('> span > span[tag]').attr('tag');
+            treeState[parent_tag] = true;
+        });
+    })
     for (tag in treeState)
-        if (treeState[tag])
-            $('.tree span[tag="' + tag + '"]').closest('li.parent_li').find(' > ul > li').show();
+        if (treeState[tag]) {
+            var parent_li = $('.tree span[tag="' + tag + '"]').closest('li.parent_li');
+            parent_li.find(' > ul > li').show();
+            parent_li.find('> span > i.tree-folder').attr('title', 'Collapse')
+                .addClass('fa-minus-square-o')
+                .removeClass('fa-plus-square-o');
+        }
 }
 
 function selectThread(tag) {
@@ -83,8 +95,10 @@ function displayThread(tag) {
         // add new item tags
         $('#thread-list .add-item-tags').on('click', function (e) {
             var input = $(this).siblings('input[name=tags]');
-            $('#directory-tree').load('/itemtag/' + $(this).attr("item"), {tags: input.val()}, function() {
+            var item_id = $(this).attr("item");
+            $('#directory-tree').load('/itemtag/' + item_id, {tags: input.val()}, function() {
                 input.val('');
+                $('#thread-sel-' + item_id).load('/threadselector/item/' + item_id);
                 prepareDirectoryTree();
                 reopenTree();
             });
@@ -142,6 +156,7 @@ $(window).load(function() {
                     // send new feed to server & reload directory tree
                     $('#directory-tree').load('/addfeed/directory/', $(this).serializeArray(), function() {
                         $('#add-feed-submit').html('Done, add another feed').removeClass('add-feed-alert');
+                        $('#add-feed-url').val('');
                         prepareDirectoryTree();
                         reopenTree();
                     });

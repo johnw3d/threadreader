@@ -63,7 +63,6 @@ Persistence
 - change the feed tag added to all post of a feed to feed:<feed-collection-name>, allow manually entered tags to define interesting dir hierarchy
   - add a refinement to directory call that can return extra leaf level over all unique values for a given qtag, to help
     generate directory with the feed-name as a final breakdown if requested
-- provide \. escape for dots in h-tag levels
 - see images in rMBP for reader UI exs, review feedly, looks good UI
 
 ----- exemplary reader apps

@@ -6,7 +6,7 @@ import tornado.web
 import tornado.auth
 import tornado.gen
 
-from threadstore.client import ThreadStoreClient
+from threadstore.client import ThreadStoreClient, ThreadStore
 from feeds.readers import RSSReader
 
 log = logging.getLogger('handlers.home')
@@ -39,8 +39,9 @@ class TemplateUtils(object):
                     for k in sorted(subdir.keys(), key=str.lower):
                         if k:
                             v = subdir[k]
+                            uk = ThreadStore.tag_unescape(k).rstrip(':')
                             count = v.pop('_count')  # TODO: handle case when no counts pulled, will have empty leafs and leaf lists
-                            item = '<span tag="%s">%s</span> <span class="item-count">%s</span></span>' % (path + k, k, count)
+                            item = '<span tag="%s">%s</span> <span class="item-count">%s</span></span>' % (path + k, uk, count)
                             if v:
                                 ul += indent + '  <li %s><span class="folder-item"><i class="tree-folder fa %s"></i>%s</span>\n' % (hidden, folder_icon, item)
                                 ul += _render_level(v, path + k + ('.' if k[-1] != ':' else ''), indent + '    ')
@@ -49,7 +50,7 @@ class TemplateUtils(object):
                             ul += indent + '  </li>\n'
                 elif isinstance(subdir, list):
                     for v in sorted(subdir, key=str.lower):
-                        ul += indent + '  <li %s><span tag="%s">%s</span>\n' % (hidden, path + v, v)
+                        ul += indent + '  <li %s><span tag="%s">%s</span>\n' % (hidden, path + v, ThreadStore.tag_unescape(v))
                         ul += indent + '  </li>\n'
                 return ul + indent + '</ul>\n'
             else:
@@ -81,6 +82,13 @@ class TemplateUtils(object):
         "extract RSS item HTML"
         return item['body']
 
+    def home_feed(self, item):
+        "extract home feed"
+        # strip threadreader.feeds.<user> & unescape
+        return ThreadStore.tag_unescape('.'.join(item['_collection'].split('.')[3:]))
+
+    tag_unescape = ThreadStore.tag_unescape
+
 utils = TemplateUtils()
 
 class HomeHandler(BaseHandler):
@@ -97,6 +105,12 @@ class ThreadListHandler(BaseHandler):
         if thread:
             self.render('threadlist.html', thread=thread['items'], utils=utils)
 
+class ThreadSelectorHandler(BaseHandler):
+
+    def get(self, item_id):
+        item = ThreadStoreClient.instance().blocking_threadstore.get_post(item_id)
+        if item:
+            self.render('thread_select.html', item=item, utils=utils)
 
 class AddFeedHandler(BaseHandler):
 
@@ -108,21 +122,23 @@ class AddFeedHandler(BaseHandler):
         url = self.get_body_argument('url')
         if not url.startswith('http://'):
             url = 'http://' + url
-        tags = self.get_body_argument('tags')
-        tags = list(map(str.strip, tags.split(',')))
+        tags = self.get_body_argument('tags').strip()
+        if tags:
+            tags = list(map(str.strip, tags.split(',')))
         # load feed
         feed = RSSReader(feed_url=url, tags=tags, user='@johnw').update()
         # pull & return updated tag directory
         tag_dir = self._get_tags_dir()
-        self.render('directory_tree.html', dir=tag_dir, new_feed='feed' + feed.feed_tag, utils=utils)
+        self.render('directory_tree.html', dir=tag_dir, new_feed=feed.feed_tag, utils=utils)
 
 
 class ItemTagHandler(BaseHandler):
 
     def post(self, item):
         "add tqgs to given item"
-        tags = self.get_body_argument('tags')
-        tags = list(map(str.strip, tags.split(',')))
+        tags = self.get_body_argument('tags').strip()
+        if tags:
+            tags = list(map(str.strip, tags.split(',')))
         ThreadStoreClient.instance().blocking_threadstore.update_tags(item, user='@johnw', add_tags=tags)
         # pull & return updated tag directory
         tag_dir = self._get_tags_dir()

@@ -1,0 +1,7 @@
+<select name="threads">
+    {% for tag in item['_tags'] %}
+        {% if tag != 'tagging' and not tag.startswith('taggedBy:') %}
+            <option value="{{tag}}">{{utils.tag_unescape(tag)}}</option>
+        {% end %}
+    {% end %}
+</select>
