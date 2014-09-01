@@ -40,12 +40,12 @@ class BaseHandler(tornado.web.RequestHandler):
 class TemplateUtils(object):
     "a namespace for threadreader template utilities (some may factor out at some point)"
 
-    def directory_tree(self, dir, new_feed=None):
+    def directory_tree(self, dir, new_feed=None, tag_prefix=''):
         "render given directory as nested <ul><li> HTML"
         def _render_level(subdir, path='', indent='  '):
             if subdir:
-                folder_icon = "fa-plus-square-o" if path == '' else "fa-plus-square-o"
-                hidden = 'style="display: none;"' if path != '' else ''
+                folder_icon = "fa-plus-square-o" if path == tag_prefix else "fa-plus-square-o"
+                hidden = 'style="display: none;"' if path != tag_prefix else ''
                 ul = indent + '<ul>\n'
                 if isinstance(subdir, dict):
                     for k in sorted(subdir.keys(), key=str.lower):
@@ -69,7 +69,7 @@ class TemplateUtils(object):
                 return ''
 
         total_count = dir.pop('_count', 0)
-        ul = _render_level(dir)
+        ul = _render_level(dir, path=tag_prefix)
         new_feed_attr = ('new_feed="%s"' % new_feed) if new_feed else ''
         return '<div class="tree" %s>\n%s</div>' %  (new_feed_attr, ul)
 

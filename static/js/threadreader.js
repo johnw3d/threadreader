@@ -164,6 +164,7 @@ $(window).load(function() {
                     $('#directory-tree').load('/addfeed/directory/', $(this).serializeArray(), function() {
                         $('#add-feed-submit').html('Done, add another feed').removeClass('add-feed-alert');
                         $('#add-feed-url').val('');
+                        $('#add-feed-tags').val('');
                         prepareDirectoryTree();
                         reopenTree();
                     });
