@@ -22,8 +22,20 @@ class BaseHandler(tornado.web.RequestHandler):
     def _get_feeds_dir(self):
         "get an up-to-date structured of all threadreader feed collections"
         return ThreadStoreClient.instance().blocking_threadstore.collection_directory(collection='threadreader.feeds',
-                                                                                     counts=True)
+                                                                                      counts=True)
 
+    def _get_dirs(self):
+        "get up-to-date feed & tag dirs for threadreader feeds"
+        # for now, a simple tag directory, with the feed: TL tree pulled out as the feed tree
+        #   this hides feeds with no current posts, TODO: fix this to show all owned feed collections when users/perms system comes up
+        # get the initial tag directory
+        threads = ThreadStoreClient.instance().blocking_threadstore.posts_tag_directory(collection='threadreader.feeds',
+                                                                                        counts=True,
+                                                                                        filter={"$not":{"$regex": r'tagging|taggedBy'}})
+        # extract feed: subtree
+        feeds = threads.pop('feed:', dict())
+
+        return feeds, threads
 
 class TemplateUtils(object):
     "a namespace for threadreader template utilities (some may factor out at some point)"
@@ -56,6 +68,7 @@ class TemplateUtils(object):
             else:
                 return ''
 
+        total_count = dir.pop('_count', 0)
         ul = _render_level(dir)
         new_feed_attr = ('new_feed="%s"' % new_feed) if new_feed else ''
         return '<div class="tree" %s>\n%s</div>' %  (new_feed_attr, ul)
@@ -95,9 +108,10 @@ class HomeHandler(BaseHandler):
 
     def get(self):
         # supply structured tag directory for threadreader subspace posts
+        feeds, threads = self._get_dirs()
         self.render('index.html',
-                    thread_dir=self._get_threads_dir(),
-                    feed_dir=self._get_feeds_dir(),
+                    thread_dir=threads,
+                    feed_dir=feeds,
                     new_feed=None,
                     utils=utils)
 
@@ -131,9 +145,10 @@ class AddFeedHandler(BaseHandler):
         # load feed
         feed = RSSReader(feed_url=url, tags=tags, user='@johnw').update()
         # pull & return updated tag directory
+        feeds, threads = self._get_dirs()
         self.render('directory_tree.html',
-                    thread_dir=self._get_threads_dir(),
-                    feed_dir=self._get_feeds_dir(),
+                    thread_dir=threads,
+                    feed_dir=feeds,
                     new_feed=feed.feed_tag,
                     utils=utils)
 
@@ -147,8 +162,9 @@ class ItemTagHandler(BaseHandler):
             tags = list(map(str.strip, tags.split(',')))
         ThreadStoreClient.instance().blocking_threadstore.update_tags(item, user='@johnw', add_tags=tags)
         # pull & return updated tag directory
+        feeds, threads = self._get_dirs()
         self.render('directory_tree.html',
-                    thread_dir=self._get_threads_dir(),
-                    feed_dir=self._get_feeds_dir(),
+                    thread_dir=threads,
+                    feed_dir=feeds,
                     new_feed=None,
                     utils=utils)

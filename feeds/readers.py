@@ -49,6 +49,7 @@ class RSSReader(BaseReader):
         ts.update_collection(dict(_id=col_id,
                                   title=title,
                                   subtitle=subtitle,
+                                  feed_tag=self.feed_tag,
                                   updated=dateutil.parser.parse(updated) if updated else None,
                                   ))
         # TODO: get & cache favicon.ico
