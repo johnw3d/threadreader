@@ -24,7 +24,7 @@ class RSSReader(BaseReader):
     "reader for RSS feeds"
 
     def __init__(self, feed_url='', collection='', feed_tag='', tags=[], user='@johnw'):  #TODO: insist on user
-        self.feed_url = feed_url
+        self.feed_url = self.seed_url = feed_url
         self.collection = collection
         self.feed_tag = feed_tag
         self.tags = tags or []
@@ -44,12 +44,15 @@ class RSSReader(BaseReader):
         # build or update feed collection
         try:
             col_id = ts.get_collection(self.collection)['_id']
+            # TODO: should ensure existing collection is from same feed_url, in case titles from two feeds are the same
         except ItemNotFound:
             col_id = ts.create_collection(self.collection, user=self.user)['_id']
         ts.update_collection(dict(_id=col_id,
                                   title=title,
                                   subtitle=subtitle,
                                   feed_tag=self.feed_tag,
+                                  feed_url=self.feed_url,
+                                  seed_url=self.seed_url,
                                   updated=dateutil.parser.parse(updated) if updated else None,
                                   ))
         # TODO: get & cache favicon.ico
@@ -92,7 +95,7 @@ class RSSReader(BaseReader):
     feed_type_pat = re.compile(r'^(application/rss\+xml|application/rdf\+xml|application/atom\+xml|application/xml|text/xml).*')
 
     def _get_feed_xml(self, recursing=False):
-        "locate an RSS feed at given URL, via <link alternate> header if needed in a normal html web page"
+        "locate an RSS feed at given URL, via <link alternate> header if seed URL is to a normal html web page"
         # get & parse response from initially-given feed URL
         try:
             response = urllib.request.urlopen(self.feed_url)

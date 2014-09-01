@@ -50,7 +50,11 @@ function selectThread(tag) {
 function displayThread(tag) {
     // open thread in main-col
     $('#main-col').load('/threadlist/' + encodeURIComponent(tag), function() {
-        var hoverPromise = null;
+        var hoverPromise = null;  // used by hover timer-delays
+        // threadlist refresh
+        $('#thread-list .thread-refresh').on('click', function (e) {
+
+        });
         //  add hide/show handler for clicks on item links
         $('#thread-list .item-link').on('click', function (e) {
             if (hoverPromise)

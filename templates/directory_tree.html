@@ -1,4 +1,4 @@
 <h4>Feeds</h4>
-{% raw utils.directory_tree(feed_dir, tag_prefix='feed:') %}
+{% raw utils.directory_tree(feed_dir, tag_prefix='feed:', top_level="Feeds") %}
 <h4>Threads</h4>
 {% raw utils.directory_tree(thread_dir, new_feed) %}

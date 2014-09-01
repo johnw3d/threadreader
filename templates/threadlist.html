@@ -1,10 +1,12 @@
 <div id="thread-list" thread="{{thread_tag}}">
     <div class="thread-header">
         <span class="thread-title">{{thread_tag}}</span>
-        <span class="thread-tools">
-            <i class="fa fa-cog thread-edit" title="Edit settings"></i>
-            <i class="fa fa-refresh thread-refresh" title="Refresh thread"></i>
-        </span>
+        {% if thread_tag.startswith('feed:') %}
+            <span class="thread-tools">
+                <i class="fa fa-cog thread-edit" title="Edit settings"></i>
+                <i class="fa fa-refresh thread-refresh" title="Refresh thread"></i>
+            </span>
+       {% end %}
     </div>
     {% for item in thread %}
         <div>
