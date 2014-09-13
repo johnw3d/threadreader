@@ -13,7 +13,8 @@
 
 // local customize variables
 @item-body-font: "Tahoma", Helvetica, Arial, sans-serif;
-@item-body-font-size: 14px;
+@item-body-font-size: 12px;
+@item-body-color: #999;
 
 body {
   margin-top: 50px;
@@ -145,22 +146,25 @@ h1 {
   }
   .item-body {
     margin-left: 20px;
-    blockquote {
-      font-family: @item-body-font;
-      font-size: @item-body-font-size;
-    }
+    font-family: @item-body-font;
+    font-size: @item-body-font-size;
+    color: @item-body-color;
   }
   .item-header {
     width: 100%;
     margin: 5px;
   }
   .item-input {
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1;
     text-align: right;
     input {
       width: 25em;
-    }
+    };
+    select {
+      color: #888;
+    };
+    color: #888;
   }
   .item-date {
     font-size: 80%;
