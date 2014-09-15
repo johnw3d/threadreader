@@ -18,6 +18,13 @@
                 <span class="elapsed-pubdate">{{ utils.elapsedSinceDateTime(item['published']) }}</span></p>
             <div class="item-header" style="display: none">
                 <div class="item-input">
+                    folds:
+                    <select class="form-control" name="folds">
+                        <option>Home</option>
+                        <option>News</option>
+                        <option>Astronomy</option>
+                        <option>Porsche</option>
+                    </select>
                     threads:
                     <span id="thread-sel-{{item['_id']}}">
                         {% include "thread_select.html" %}

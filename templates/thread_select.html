@@ -1,4 +1,4 @@
-<select name="threads">
+<select class="form-control" name="threads">
     {% for tag in item['_tags'] %}
         {% if tag != 'tagging' and not tag.startswith('taggedBy:') %}
             <option value="{{tag}}" {% if tag == thread_tag %}selected{% end %}>{{utils.tag_unescape(tag)}}</option>
